@@ -24,7 +24,7 @@ define( [ "ui/page-element", "ui/logo-spinner" ], function( PageElement, LogoSpi
     var title = document.createElement( "h3" );
     title.innerHTML = "Timeline Media";
     var subtitle = document.createElement( "h5" );
-    subtitle.innerHTML = "&#10003;HTML5 &#10003;Youtube &#10003;Vimeo";
+    subtitle.innerHTML = "&#10003; HTML5 &#10003; YouTube &#10003; Vimeo";
     var container = document.createElement( "container" );
     container.className = "container";
     var changeButton = document.createElement( "button" );
@@ -47,7 +47,7 @@ define( [ "ui/page-element", "ui/logo-spinner" ], function( PageElement, LogoSpi
         subtitle.innerHTML = message;
       }
       else{
-        subtitle.innerHTML = "&#10003;HTML5 &#10003;Youtube &#10003;Vimeo";
+        subtitle.innerHTML = "&#10003; HTML5 &#10003; YouTube &#10003; Vimeo";
       }
     }
 
