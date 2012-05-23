@@ -18,7 +18,8 @@ define( [
         _parentElement = document.createElement( "div" );
 
     _parentElement.id = "butter-timeline";
-
+    
+    _parentElement.classList.add( "butter-timeline" );
     _parentElement.classList.add( "fadable" );
 
     this._start = function( onModuleReady ){

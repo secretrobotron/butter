@@ -20,7 +20,7 @@
 
     var __trackEventCSSRules = {},
         __cssRuleProperty = "data-butter-trackevent-type",
-        __cssRulePrefix = "#butter-timeline .butter-track-event",
+        __cssRulePrefix = ".butter-timeline .butter-track-event",
         __newStyleSheet = document.createElement( "style" );
 
     __newStyleSheet.type = "text/css";

@@ -1,0 +1,85 @@
+.butter-media-properties {
+  position: absolute;
+  width: 90px;
+  height: 32px;
+  z-index: 2139000000;
+  font-family: Verdana, sans-serif;
+  font-size: 12px;
+  border: 2px solid #fff;
+  background-color: #131313;
+  background-image: -moz-linear-gradient( center bottom, #2c2c2c 0, #4c4c4c 100% );
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop( 0, #2c2c2c ), color-stop( 1, #4c4c4c ) );
+  -moz-transition: opacity 0.5s, width 0.25s, height 0.25s;
+  -webkit-transition: opacity 0.5s, width 0.25s, height 0.25s;
+  transition: opacity 0.5s, width 0.25s, height 0.25s;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.butter-media-properties .loading-container {
+  position: absolute;
+  z-index: 2140000001;
+  left: 1px;
+  top: 1px;
+  width: 30px;
+  height: 30px;
+}
+
+
+.butter-media-properties .container {
+  width: 250px;
+  height: 100px;
+  min-width: 250px;
+  min-height: 100px;
+  position: absolute;
+  color: #fff;
+}
+
+/*Show and hide media settings on mouse-over */
+.butter-media-properties .inner-container {
+  display: none;
+  padding: 10px;
+}
+.butter-media-properties:hover .inner-container, .hold.butter-media-properties .inner-container {  display: block; }
+.butter-media-properties:hover .edit-message, .hold.butter-media-properties .edit-message { display: none; }
+.butter-media-properties:hover, .hold.butter-media-properties {
+  opacity: 1.0;
+  width: 250px;
+  height: 100px;
+}
+
+/* Media settings inner elements */
+.butter-media-properties .edit-message {
+  color: #FFF;
+  padding-top: 6px;
+  padding-left: 3px;
+}
+.butter-media-properties h3, .butter-media-properties p {
+  margin: 0;
+}
+.butter-media-properties .url {
+  width: 224px;
+  border: 1px solid #333;
+  padding: 5px 3px;
+}
+.butter-media-properties button {
+  margin-top: .5em;
+  float: right;
+}
+.form-field-notes {
+  font-style: italic;
+  font-size: 80%;
+}
+p.form-error {
+  color: #FF0000 !important;
+  font-weight: 600;
+}
+p.form-ok {
+  color: #A0C549;
+}
+input.form-ok {
+  border: 1px solid #A0C549 !important;
+}
+input.form-error {
+  border: 1px solid red !important;
+}

@@ -103,9 +103,11 @@
       this._start = function( onModuleReady ){
         var parentElement = document.createElement( "div" );
         parentElement.id = "butter-editor";
+        parentElement.classList.add( "butter-editor" );
 
         _editorContainer = document.createElement( "div" );
         _editorContainer.id = "editor-container";
+        _editorContainer.className = "editor-container";
         parentElement.appendChild( _editorContainer );
 
         parentElement.classList.add( "fadable" );

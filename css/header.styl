@@ -1,0 +1,105 @@
+HEADER_Z = 2140000000
+
+.butter-header-spacing
+  padding-top 35px
+
+.butter-header
+  z-index HEADER_Z
+  position fixed
+  width 100%
+  left 0px
+  top 0px
+  height 35px
+  color #fff
+  background-image -moz-linear-grad( center bottom, #2C2C2C 0, #4C4C4C 100% )
+  background-image -webkit-gradient( linear, left bottom, left top, color-stop( 0, #2C2C2C ), color-stop( 1, #4C4C4C ) )
+  display block
+
+  .logo-drop
+    background-size cover
+    background-image url( "../resources/drop.png" )
+    position absolute
+    left 10px
+    top 4px
+    width 23px
+    height 23px
+
+  h1
+    font-family 'MetaBold'
+    color #fff
+    font-size 21px
+    position absolute
+    left 40px
+    top 0px
+    margin 0px
+
+    span.logo
+      font-family 'MetaBold'
+      font-size 50px
+      padding-right 10px
+      color white
+
+  a
+    color inherit
+    text-decoration none
+
+
+  div.editor-actions
+    position absolute
+    right 20px
+    top 8px
+
+  button, a.button
+    font 12px 'BebasRegular'
+    float left
+    margin 0 5px 0 0
+    text-align center
+    text-decoration none
+    border-radius 5px
+    border none
+    cursor pointer
+    color white
+
+  .new
+    box-shadow: none;
+    linear-grad #D3D3D3 #667
+
+    &:hover
+      linear-grad #D3D3D3 #909090
+
+  .save, .load, .export
+    box-shadow: none;
+    linear-grad #D1BE70 #A08546
+
+    &:hover
+      linear-grad #D1BE70 #AD9B4C
+
+  .share
+    width: 100px;
+    linear-grad #26B5D8 #2B86D4
+
+    &:hover
+      linear-grad #26B5D8 #29B4D6
+
+  .auth
+    font-family verdana
+    border-radius 0px
+    background-color transparent
+    margin-left 10px;
+    text-align left;
+    text-shadow none
+    box-shadow none
+
+    &:hover
+      color #D3D3D3
+
+    .auth-out
+      font-family verdana
+      border-radius 0px
+      background-color transparent
+      text-align left
+      text-shadow none
+      box-shadow none
+
+    &:hover
+      color #D3D3D3

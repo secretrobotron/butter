@@ -21,27 +21,28 @@ define( [ "dialog/iframe-dialog" ], function( IFrameDialog ){
     _rootElement.innerHTML = '' +
       '<div class="logo-drop"></div><h1>' + title + '</h1>' +
       '<div class="editor-actions">' +
-      '    <button id="butter-header-new">New</button>' +
-      '    <button id="butter-header-save">Save</button>' +
-      '    <button id="butter-header-load">Load</button>' +
-      '    <button id="butter-header-export">Export</button>' +
-      '    <button id="butter-header-share">Share</button>' +
-      '    <button id="butter-header-auth">' + DEFAULT_AUTH_BUTTON_TEXT + '</button>' +
-      '    <button id="butter-header-auth-out">Logout</button>' +
+      '    <button class="new">New</button>' +
+      '    <button class="save">Save</button>' +
+      '    <button class="load">Load</button>' +
+      '    <button class="export">Export</button>' +
+      '    <button class="share">Share</button>' +
+      '    <button class="auth">' + DEFAULT_AUTH_BUTTON_TEXT + '</button>' +
+      '    <button class="auth-out">Logout</button>' +
       '</div>';
 
     _rootElement.setAttribute( "data-butter-exclude", true );
     _rootElement.id = "butter-header";
+    _rootElement.className = "butter-header";
 
     document.body.insertBefore( _rootElement, document.body.firstChild );
 
-    _newButton = document.getElementById( "butter-header-new" );
-    _saveButton = document.getElementById( "butter-header-save" );
-    _loadButton = document.getElementById( "butter-header-load" );
-    _shareButton = document.getElementById( "butter-header-share" );
-    _authButton = document.getElementById( "butter-header-auth" );
-    _exportButton = document.getElementById( "butter-header-export" );
-    _logoutButton = document.getElementById( "butter-header-auth-out" );
+    _newButton = _rootElement.querySelector( "button.new" );
+    _saveButton = _rootElement.querySelector( "button.save" );
+    _loadButton = _rootElement.querySelector( "button.load" );
+    _shareButton = _rootElement.querySelector( "button.share" );
+    _authButton = _rootElement.querySelector( "button.auth" );
+    _exportButton = _rootElement.querySelector( "button.export" );
+    _logoutButton = _rootElement.querySelector( "button.auth-out" );
 
     _newButton.title = "Create a new project";
     _saveButton.title = "Save your project";

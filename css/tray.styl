@@ -1,0 +1,117 @@
+.butter-tray
+  position fixed
+  z-index 2140000000
+  bottom 0px
+  left 0px
+  width 100%
+  height 210px
+  border 1px solid #000
+  background-image url( "../resources/bg.jpg" )
+  transition bottom 0.35s
+
+  &, & *
+    touch-callout none
+    user-select none
+
+  .fadable
+    transition opacity 0.5s
+
+.status-container
+  position absolute
+  width 100px
+  height 40px
+  top 5px
+  left 0px
+
+  div
+    background-image url( "../resources/buttons.png" )
+    cursor pointer
+
+.butter-tray[ ui-state="hidden" ] {
+  bottom: -160px;
+}
+
+.butter-tray #toggle-button {
+  height: 30px;
+  width: 50px;
+  background-image: url( "../resources/bg.jpg" );
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  position: absolute;
+  top: -23px;
+  right: 10px;
+  box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
+  moz-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
+  o-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
+  webkit-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
+  z-index: -1;
+}
+
+.butter-tray #toggle-button:hover {
+  box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
+  moz-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
+  o-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
+  webkit-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
+  cursor: pointer;
+}
+
+.butter-tray #toggle-button div {
+  background-image: url("../resources/buttons.png");
+  background-position: -255px 10px;
+  width: 15px;
+  height: 20px;
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  margin: 0 18px 0 18px;
+}
+
+.butter-tray[ ui-state="hidden" ] #toggle-button div {
+  background-position: -255px -7px;
+}
+
+.butter-tray[ ui-state="hidden" ] .media-instance {
+  top: 0px;
+}
+
+.butter-tray .scroll-bar {
+  background: #222;
+  border-radius: 15px;
+  position: absolute;
+  box-shadow: 0 1px 0 #656565;
+  moz-box-shadow: 0 1px 0 #656565;
+  o-box-shadow: 0 1px 0 #656565;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.butter-tray .scroll-handle {
+  height: 8px;
+  top: 1px;
+  position: absolute;
+  background: #777;
+  border-radius: 15px;
+  box-shadow: inset 0 -1px 1px #000;
+  moz-box-shadow: inset 0 -1px 1px #000;
+  o-box-shadow: inset 0 -1px 1px #000;
+  webkit-box-shadow: inset 0 -1px 1px #000;
+
+}
+
+.butter-tray .scroll-bar-v .scroll-handle {
+  width: 8px;
+  left: 1px;
+  position: absolute;
+  background: #777;
+  border-radius: 15px;
+  box-shadow: inset 0 -1px 1px #000;
+  moz-box-shadow: inset 0 -1px 1px #000;
+  o-box-shadow: inset 0 -1px 1px #000;
+  webkit-box-shadow: inset 0 -1px 1px #000;
+}
+
+.butter-tray .scroll-handle:hover {
+  background: #fff;
+  cursor: pointer;
+}

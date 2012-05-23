@@ -1,0 +1,189 @@
+#butter-timeline {
+  position: absolute;
+  width: 100%;
+  height: 160px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 2140000001;
+}
+
+#butter-timeline[ data-butter-disabled ] {
+}
+
+
+#butter-timeline .media-instance {
+  height: 190px;
+  padding: 0 150px 0 115px;
+  position: relative;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -moz-transition: top 0.5s;
+  -webkit-transition: top 0.5s;
+  transition: top 0.5s;
+}
+
+
+#butter-timeline .media-container {
+  position: relative;
+  top: 5px;
+  padding: 0;
+  margin: 0;
+  height: 135px;
+}
+
+#butter-timeline .scroll-bar-h {
+  bottom: -15px;
+  width: 100%;
+  height: 10px;
+  left: 0;
+}
+
+#butter-timeline .scroll-bar-v {
+  right: -16px;
+  width: 10px;
+  height: 100%;
+  top: 0;
+}
+
+#butter-timeline .tracks-container-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: inset 0 0 6px #131313;
+  webkit-box-shadow: inset 0 0 6px #131313;
+  moz-box-shadow: inset 0 0 6px #131313;
+  o-box-shadow: inset 0 0 6px #131313;
+  border: 1px solid #2B2B2B;
+  border-image: initial;
+  border-radius: 5px;
+  moz-border-radius: 5px;
+  o-border-radius: 5px;
+  webkit-border-radius: 5px;
+}
+
+#butter-timeline .tracks-container-wrapper .tracks-container {
+  width: 100%;
+  position: relative;
+  background: transparent;
+  font-size: 100%;
+  outline: none;
+  padding-top: 7px;
+  padding-bottom: 35px;
+}
+
+#butter-timeline .tracks-container .butter-track-event {
+  box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 );
+  moz-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 );
+  o-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 );
+  webkit-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 );
+  border-radius: 5px;
+  moz-border-radius: 5px;
+  o-border-radius: 5px;
+  webkit-border-radius: 5px;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(255,255,51)), color-stop(1, rgb(140,215,90)) );
+  background-image: -moz-linear-gradient( center bottom, rgb(255,255,0) 0%, rgb(200,200,0) 100% );
+  font: normal 10px/25px Arial, Helvetica, sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  color: #333;
+  cursor: move;
+  overflow: hidden;
+  display: block;
+  height: 27px;
+  margin-top: 1px;
+  line-height: 25px;
+  opacity: 0.8;
+  position: absolute;
+}
+
+#butter-timeline .tracks-container .butter-track {
+  width: 100%;
+  border-radius: 6px;
+  moz-border-radius: 6px;
+  o-border-radius: 6px;
+  webkit-border-radius: 6px;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-color: transparent;
+  background-image: url( "../resources/track-bg.png" );
+  background-origin: padding-box;
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: auto auto;
+  height: 28px;
+  margin-bottom: 6px;
+  position: relative;
+  box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6);
+  moz-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6);
+  o-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6);
+  webkit-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6);
+}
+
+#butter-timeline .tracks-container .butter-track.draggable-hover {
+  box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6), inset 0 0px 10px #3355ee, inset 1px 1px 10px #3355ee;
+  moz-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6), inset 0 0px 10px #1122cc;
+  o-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6), inset 0 0px 10px #1122cc;
+  webkit-box-shadow: 0 1px 0 #737373, inset 0 1px 0 #414141, inset 1px 1px 6px #000000, inset 1px 3px 1px rgba(0,0,0,0.4), inset 0px -1px 1px rgba(0,0,0,0.6), inset 0 0px 10px #3355cc;
+}
+
+#butter-timeline .tracks-container .butter-track-event[selected="true"] {
+  box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 ),
+              2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              2px -2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px -2px 2px rgba( 65, 80, 215, 0.8 );
+  moz-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 ),
+              2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              2px -2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px -2px 2px rgba( 65, 80, 215, 0.8 );
+  o-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 ),
+              2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              2px -2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px -2px 2px rgba( 65, 80, 215, 0.8 );
+  webkit-box-shadow: inset 0 9px 0 rgba( 255, 255, 255, 0.5 ),
+              2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px 2px 2px rgba( 65, 80, 215, 0.8 ),
+              2px -2px 2px rgba( 65, 80, 215, 0.8 ),
+              -2px -2px 2px rgba( 65, 80, 215, 0.8 );
+}
+
+#butter-timeline .tracks-container .butter-track .track-title {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+}
+
+#butter-timeline .butter-track-event .handle {
+  position: absolute;
+  height: 100%;
+  min-width: 15px;
+  width: 15px;
+  background-color: rgba( 255, 255, 255, 0.5 );
+}
+
+#butter-timeline .butter-track-event .handle:hover {
+}
+
+#butter-timeline .butter-track-event .left-handle {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  left: 0px;
+  top: 0px;
+  cursor: w-resize;
+}
+
+#butter-timeline .butter-track-event .right-handle {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  right: 0px;
+  top: 0px;
+  cursor: e-resize;
+}

@@ -1,0 +1,35 @@
+BEHIND_TIMEINE_Z = 2139000000
+LAYER_Z = 2140000100
+
+.butter-modal-container
+  position fixed
+  top 0px
+  left 0px
+  width 0px
+  height 0px
+
+  .layer iframe
+    width 60%
+    height 60%
+    margin 5% 20%
+    background-color #fff
+    border 3px solid #fff
+    border-radius 20px
+    opacity 0
+
+  .layer
+    z-index LAYER_Z
+    top 0px
+    left 0px
+    width 100%
+    height 100%
+    background rgba( 0, 0, 0, 0.7 )
+    position fixed
+    opacity 0
+
+    &.fade-in, iframe.fade-in
+      opacity 1
+      transition opacity 0.5s
+
+    .behind-timeline
+      z-index BEHIND_TIMEINE_Z
