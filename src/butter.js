@@ -21,11 +21,13 @@
         return true;
     }
 
-    var Butter = function() {
-      if ( !Butter.__waiting ) {
-        Butter.__waiting = [];
-      } //if
-      Butter.__waiting.push( arguments );
+    var Butter = {
+      init: function(){
+        if ( !Butter.__waiting ) {
+          Butter.__waiting = [];
+        } //if
+        Butter.__waiting.push( arguments );
+      }
     };
 
     if ( !window.Butter ) {

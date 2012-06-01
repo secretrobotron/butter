@@ -8,249 +8,213 @@
       DEFAULT_TRACKEVENT_OFFSET = 0.01;
 
   define( [
-            "core/eventmanager",
-            "core/logger",
-            "core/config",
-            "core/target",
-            "core/media",
-            "core/page",
-            "./modules",
-            "./dependencies",
-            "ui/ui",
-            "util/xhr",
-            "util/lang",
+            "core/eventmanager", "core/logger", "core/config", "core/target", "core/media", "core/page",
+            "./modules", "./dependencies", "ui/ui", "util/xhr", "util/lang",
             "text!default-config.json"
           ],
           function(
-            EventManagerWrapper,
-            Logger,
-            Config,
-            Target,
-            Media,
-            Page,
-            Modules,
-            Dependencies,
-            UI,
-            XHR,
-            Lang,
+            EventManagerWrapper, Logger, Config, Target, Media, Page,
+            Modules, Dependencies, UI, XHR, Lang,
             DefaultConfigJSON
           ){
 
-    var __guid = 0,
-        __instances = [];
+    var Butter;
 
-    var Butter = function( options ){
-      return new ButterInit( options );
-    }; //Butter
+    var _defaultPopcornScripts = {},
+        _defaultPopcornCallbacks = {};
 
-    function ButterInit( butterOptions ){
+    var _defaultConfig,
+        _defaultTarget;
 
-      butterOptions = butterOptions || {};
+    var _logger = new Logger( "Butter" );
 
-      var _media = [],
-          _currentMedia,
-          _targets = [],
-          _id = "Butter" + __guid++,
-          _logger = new Logger( _id ),
-          _page,
-          _config,
-          _defaultConfig,
-          _defaultTarget,
-          _this = this,
-          _selectedEvents = [],
-          _defaultPopcornScripts = {},
-          _defaultPopcornCallbacks = {};
+    // We use the default configuration in src/default-config.json as
+    // a base, and override whatever the user provides in the
+    // butterOptions.config file.
+    try {
+      _defaultConfig = Config.parse( DefaultConfigJSON );
+    }
+    catch ( e ) {
+      throw "Butter Error: unable to find or parse default-config.json";
+    }
 
-      // We use the default configuration in src/default-config.json as
-      // a base, and override whatever the user provides in the
-      // butterOptions.config file.
-      try {
-        _defaultConfig = Config.parse( DefaultConfigJSON );
-      } catch ( e) {
-        throw "Butter Error: unable to find or parse default-config.json";
+    function trackEventRequested ( element, media, target ) {
+      var track,
+          type = element.getAttribute( "data-butter-plugin-type" ),
+          start = media.currentTime,
+          end;
+
+      if( start > media.duration ){
+        start = media.duration - DEFAULT_TRACKEVENT_DURATION;
       }
 
-      if ( butterOptions.debug !== undefined ) {
-        Logger.enabled( butterOptions.debug );
+      if( start < 0 ){
+        start = 0;
       }
 
-      EventManagerWrapper( _this );
+      end = start + DEFAULT_TRACKEVENT_DURATION;
 
-      this.project = {
+      if( end > media.duration ){
+        end = media.duration;
+      }
+
+      if( !type ){
+        _logger.log( "Invalid trackevent type requested." );
+        return;
+      } //if
+
+      if( media.tracks.length === 0 ){
+        media.addTrack();
+      } //if
+      track = media.tracks[ 0 ];
+      var trackEvent = track.addTrackEvent({
+        type: type,
+        popcornOptions: {
+          start: start,
+          end: end,
+          target: target
+        }
+      });
+
+      if( media.currentTime < media.duration - DEFAULT_TRACKEVENT_OFFSET ){
+        media.currentTime += DEFAULT_TRACKEVENT_OFFSET;
+      }
+
+      return trackEvent;
+    }
+
+    function targetTrackEventRequested( e ){
+      if( Butter.currentMedia ){
+        var trackEvent = trackEventRequested( e.data.element, Butter.currentMedia, e.target.elementID );
+        Butter.dispatch( "trackeventcreated", {
+          trackEvent: trackEvent,
+          by: "target"
+        });
+      }
+      else {
+        _logger.log( "Warning: No media to add dropped trackevent." );
+      }
+    }
+
+    function mediaPlayerTypeRequired( e ){
+      Butter.page.addPlayerType( e.data );
+    }
+
+    function mediaTrackEventRequested( e ){
+      var trackEvent = trackEventRequested( e.data, e.target, "Media Element" );
+      Butter.dispatch( "trackeventcreated", {
+        trackEvent: trackEvent,
+        by: "media"
+      });
+    }
+
+    function attemptDataLoad( finishedCallback ){
+      if ( Butter.config.value( "savedDataUrl" ) ) {
+
+        var xhr = new XMLHttpRequest(),
+            savedDataUrl = Butter.config.value( "savedDataUrl" ) + "?noCache=" + Date.now(),
+            savedData;
+
+        xhr.open( "GET", savedDataUrl, false );
+
+        if( xhr.overrideMimeType ){
+          // Firefox generates a misleading "syntax" error if we don't have this line.
+          xhr.overrideMimeType( "application/json" );
+        }
+
+        // Deal with caching
+        xhr.setRequestHeader( "If-Modified-Since", "Fri, 01 Jan 1960 00:00:00 GMT" );
+        xhr.send( null );
+
+        if( xhr.status === 200 ){
+          try{
+            savedData = JSON.parse( xhr.responseText );
+          }
+          catch( e ){
+            Butter.dispatch( "loaddataerror", "Saved data not formatted properly." );
+          }
+          Butter.importProject( savedData );
+        }
+        else {
+          _logger.log( "Butter saved data not found: " + savedDataUrl );
+        }
+      }
+
+      finishedCallback();
+    }
+
+    function readConfig( userConfig ){
+      // Overwrite default config options with user settings (if any).
+      if( userConfig ){
+        _defaultConfig.merge( userConfig );
+      }
+
+      Config.currentConfig = _defaultConfig;
+      Butter.config = Config;
+
+      Butter.project.template = Config.value( "name" );
+
+      Dependencies.init();
+      Page.init();
+      
+      Butter.loader = Dependencies;
+      Butter.page = Page;
+      Butter.ui = new UI();
+
+      Butter.ui.load(function(){
+        //prepare the page next
+        Butter.preparePopcornScriptsAndCallbacks(function(){
+          Butter.preparePage(function(){
+            Modules.init(function(){
+              if( Butter.config.value( "snapshotHTMLOnReady" ) ){
+                Butter.page.snapshotHTML();
+              }
+              attemptDataLoad(function(){
+                //fire the ready event
+                Butter.dispatch( "ready" );
+              });
+            });
+          });
+        });
+      });
+    }
+
+    Butter = {
+      media: [],
+      targets: [],
+
+      currentMedia: null,
+      selectedEvents: [],
+
+      defaultTarget: null,
+
+      page: null,
+      config: null,
+      loader: null,
+
+      ui: null,
+
+      project: {
         id: null,
         name: null,
         data: null,
         html: null,
         template: null
-      };
+      },
 
-      function checkMedia() {
-        if ( !_currentMedia ) {
-          throw new Error("No media object is selected");
-        } //if
-      } //checkMedia
-
-      this.getManifest = function ( name ) {
-        checkMedia();
-        return _currentMedia.getManifest( name );
-      }; //getManifest
-
-      this.getHTML = function(){
-        var media = [];
-        for( var i=0; i<_media.length; ++i ){
-          media.push( _media[ i ].generatePopcornString() );
-        } //for
-        return _page.getHTML( media );
-      }; //getHTML
-
-      function trackEventRequested( element, media, target ){
-        var track,
-            type = element.getAttribute( "data-butter-plugin-type" ),
-            start = media.currentTime,
-            end;
-
-        if( start > media.duration ){
-          start = media.duration - DEFAULT_TRACKEVENT_DURATION;
-        }
-
-        if( start < 0 ){
-          start = 0;
-        }
-
-        end = start + DEFAULT_TRACKEVENT_DURATION;
-
-        if( end > media.duration ){
-          end = media.duration;
-        }
-
-        if( !type ){
-          _logger.log( "Invalid trackevent type requested." );
-          return;
-        } //if
-
-        if( media.tracks.length === 0 ){
-          media.addTrack();
-        } //if
-        track = media.tracks[ 0 ];
-        var trackEvent = track.addTrackEvent({
-          type: type,
-          popcornOptions: {
-            start: start,
-            end: end,
-            target: target
-          }
-        });
-
-        if( media.currentTime < media.duration - DEFAULT_TRACKEVENT_OFFSET ){
-          media.currentTime += DEFAULT_TRACKEVENT_OFFSET;
-        }
-
-        return trackEvent;
-      }
-
-      function targetTrackEventRequested( e ){
-        if( _currentMedia ){
-          var trackEvent = trackEventRequested( e.data.element, _currentMedia, e.target.elementID );
-          _this.dispatch( "trackeventcreated", {
-            trackEvent: trackEvent,
-            by: "target"
-          });
-        }
-        else {
-          _logger.log( "Warning: No media to add dropped trackevent." );
-        } //if
-      } //targetTrackEventRequested
-
-      function mediaPlayerTypeRequired( e ){
-        _page.addPlayerType( e.data );
-      }
-
-      function mediaTrackEventRequested( e ){
-        var trackEvent = trackEventRequested( e.data, e.target, "Media Element" );
-        _this.dispatch( "trackeventcreated", {
-          trackEvent: trackEvent,
-          by: "media"
-        });
-      }
-
-       /****************************************************************
-       * Target methods
-       ****************************************************************/
-      //addTarget - add a target object
-      this.addTarget = function ( target ) {
-        if ( !(target instanceof Target ) ) {
-          target = new Target( target );
-        } //if
-        _targets.push( target );
-        target.listen( "trackeventrequested", targetTrackEventRequested );
-        _logger.log( "Target added: " + target.name );
-        _this.dispatch( "targetadded", target );
-        if( target.isDefault ){
-          _defaultTarget = target;
-        } //if
-        return target;
-      }; //addTarget
-
-      //removeTarget - remove a target object
-      this.removeTarget = function ( target ) {
-        if ( typeof(target) === "string" ) {
-          target = _this.getTargetByType( "id", target );
-        } //if
-        var idx = _targets.indexOf( target );
-        if ( idx > -1 ) {
-          target.unlisten( "trackeventrequested", targetTrackEventRequested );
-          _targets.splice( idx, 1 );
-          delete _targets[ target.name ];
-          _this.dispatch( "targetremoved", target );
-          if( _defaultTarget === target ){
-            _defaultTarget = undefined;
-          } //if
-          return target;
-        } //if
-        return undefined;
-      }; //removeTarget
-
-      //serializeTargets - get a list of targets objects
-      this.serializeTargets = function () {
-        var sTargets = [];
-        for ( var i=0, l=_targets.length; i<l; ++i ) {
-          sTargets.push( _targets[ i ].json );
-        }
-        return sTargets;
-      }; //serializeTargets
-
-      //getTargetByType - get the target's information based on a valid type
-      // if type is invalid, return undefined
-      this.getTargetByType = function( type, val ) {
-        for( var i = 0, l = _targets.length; i < l; i++ ) {
-          if ( _targets[ i ][ type ] === val ) {
-            return _targets[ i ];
-          }
-        }
-        return undefined;
-      }; //getTargetByType
-
-      /****************************************************************
-       * Project methods
-       ****************************************************************/
-      //importProject - Import project data
-      this.importProject = function ( projectData ) {
-        var i,
-            l;
-
+      importProject: function ( projectData ) {
+        var i, l;
         if ( projectData.targets ) {
           for ( i = 0, l = projectData.targets.length; i < l; ++i ) {
-
-            var t, targets = _this.targets, targetData = projectData.targets[ i ];
-            for ( var k=0, j=targets.length; k<j; ++k ) {
+            var t, targets = Butter.targets, targetData = projectData.targets[ i ];
+            for ( var k = 0, j = targets.length; k < j; ++k ) {
               if ( targets[ k ].name === targetData.name ) {
                 t = targets[ k ];
                 break;
               }
             }
-
             if ( !t ) {
-              _this.addTarget( targetData );
+              Butter.addTarget( targetData );
             }
             else {
               t.json = targetData;
@@ -259,68 +223,56 @@
         }
         if ( projectData.media ) {
           for ( i = 0, l = projectData.media.length; i < l; ++i ) {
-
             var mediaData = projectData.media[ i ],
-                m = _this.getMediaByType( "target", mediaData.target );
-
+                m = Butter.getMediaByType( "target", mediaData.target );
             if ( !m ) {
               m = new Media();
               m.json = mediaData;
-              _this.addMedia( m );
+              Butter.addMedia( m );
             }
             else {
               m.json = mediaData;
             }
+          }
+        }
+      },
 
-          } //for
-        } //if projectData.media
-      }; //importProject
-
-      //exportProject - Export project data
-      this.exportProject = function () {
+      exportProject: function () {
         var exportJSONMedia = [];
-        for ( var m=0, lm=_media.length; m<lm; ++m ) {
-          exportJSONMedia.push( _media[ m ].json );
+        for ( var m = 0; m < Butter.media.length; ++m ) {
+          exportJSONMedia.push( Butter.media[ m ].json );
         }
         var projectData = {
-          targets: _this.serializeTargets(),
+          targets: Butter.serializeTargets(),
           media: exportJSONMedia
         };
         return projectData;
-      };
+      },
 
-      this.clearProject = function(){
-        var allTrackEvents = this.orderedTrackEvents;
+      clearProject: function(){
+        while( Butter.orderedTrackEvents.length > 0 ) {
+          Butter.orderedTrackEvents[ 0 ].track.removeTrackEvent( Butter.orderedTrackEvents[ 0 ] );
+        }
+        while( Butter.targets.length > 0 ){
+          Butter.targets[ 0 ].destroy();
+          Butter.removeTarget( Butter.targets[ 0 ] );
+        }
+        while( Butter.media.length > 0 ){
+          Butter.media[ 0 ].destroy();
+          Butter.removeMedia( Butter.media[ 0 ] );
+        }
+      },
 
-        while( allTrackEvents.length > 0 ) {
-          allTrackEvents[ 0 ].track.removeTrackEvent( allTrackEvents[ 0 ] );
-        }
-        while( _targets.length > 0 ){
-          _targets[ 0 ].destroy();
-          _this.removeTarget( _targets[ 0 ] );
-        }
-        while( _media.length > 0 ){
-          _media[ 0 ].destroy();
-          _this.removeMedia( _media[ 0 ] );
-        }
-      };
-
-      /****************************************************************
-       * Media methods
-       ****************************************************************/
-      //getMediaByType - get the media's information based on a valid type
-      // if type is invalid, return undefined
-      this.getMediaByType = function ( type, val ) {
-       for( var i = 0, l = _media.length; i < l; i++ ) {
-          if ( _media[ i ][ type ] === val ) {
-            return _media[ i ];
+      getMediaByType: function ( type, val ) {
+       for( var i = 0, l = Butter.media.length; i < l; i++ ) {
+          if ( Butter.media[ i ][ type ] === val ) {
+            return Butter.media[ i ];
           }
         }
         return undefined;
-      }; //getMediaByType
+      },
 
-      //addMedia - add a media object
-      this.addMedia = function ( media ) {
+      addMedia: function ( media ) {
         if ( !( media instanceof Media ) ) {
           media = new Media( media );
         } //if
@@ -328,9 +280,9 @@
         media.popcornCallbacks = _defaultPopcornCallbacks;
         media.popcornScripts = _defaultPopcornScripts;
 
-        _media.push( media );
+        Butter.media.push( media );
 
-        _this.chain( media, [
+        Butter.chain( media, [
           "mediacontentchanged",
           "mediadurationchanged",
           "mediatargetchanged",
@@ -362,21 +314,20 @@
         media.listen( "trackeventrequested", mediaTrackEventRequested );
         media.listen( "mediaplayertyperequired", mediaPlayerTypeRequired );
 
-        _this.dispatch( "mediaadded", media );
-        if ( !_currentMedia ) {
-          _this.currentMedia = media;
+         Butter.dispatch( "mediaadded", media );
+        if ( !Butter.currentMedia ) {
+          Butter.currentMedia = media;
         } //if
         media.setupContent();
         return media;
-      }; //addMedia
+      },
 
-      //removeMedia - forget a media object
-      this.removeMedia = function ( media ) {
+      removeMedia: function ( media ) {
 
-        var idx = _media.indexOf( media );
+        var idx = Butter.media.indexOf( media );
         if ( idx > -1 ) {
-          _media.splice( idx, 1 );
-          _this.unchain( media, [
+          Butter.media.splice( idx, 1 );
+          Butter.unchain( media, [
             "mediacontentchanged",
             "mediadurationchanged",
             "mediatargetchanged",
@@ -392,145 +343,43 @@
           ]);
           var tracks = media.tracks;
           for ( var i=0, l=tracks.length; i<l; ++i ) {
-            _this.dispatch( "trackremoved", tracks[ i ] );
+            Butter.dispatch( "trackremoved", tracks[ i ] );
           } //for
-          if ( media === _currentMedia ) {
-            _currentMedia = undefined;
+          if ( media === Butter.currentMedia ) {
+            Butter.currentMedia = undefined;
           } //if
 
           media.unlisten( "trackeventrequested", mediaTrackEventRequested );
           media.unlisten( "mediaplayertyperequired", mediaPlayerTypeRequired );
 
-          _this.dispatch( "mediaremoved", media );
+          Butter.dispatch( "mediaremoved", media );
           return media;
         } //if
         return undefined;
-      }; //removeMedia
+      },
 
-      this.extend = function(){
-        Butter.extend( _this, [].slice.call( arguments, 1 ) );
-      };
-
-      /****************************************************************
-       * Properties
-       ****************************************************************/
-      Object.defineProperties( _this, {
-        defaultTarget: {
-          enumerable: true,
-          get: function(){
-            return _defaultTarget;
-          }
-        },
-        config: {
-          enumerable: true,
-          get: function(){
-            return _config;
-          }
-        },
-        id: {
-          get: function(){ return _id; },
-          enumerable: true
-        },
-        tracks: {
-          get: function() {
-            return _currentMedia.tracks;
-          },
-          enumerable: true
-        },
-        targets: {
-          get: function() {
-            return _targets;
-          },
-          enumerable: true
-        },
-        currentTime: {
-          get: function() {
-            checkMedia();
-            return _currentMedia.currentTime;
-          },
-          set: function( time ) {
-            checkMedia();
-            _currentMedia.currentTime = time;
-          },
-          enumerable: true
-        },
-        duration: {
-          get: function() {
-            checkMedia();
-            return _currentMedia.duration;
-          },
-          set: function( time ) {
-            checkMedia();
-            _currentMedia.duration = time;
-          },
-          enumerable: true
-        },
-        media: {
-          get: function() {
-            return _media;
-          },
-          enumerable: true
-        },
-        currentMedia: {
-          get: function() {
-            return _currentMedia;
-          },
-          set: function( media ) {
-            if ( typeof( media ) === "string" ) {
-              media = _this.getMediaByType( "id", media.id );
-            } //if
-
-            if ( media && _media.indexOf( media ) > -1 ) {
-              _currentMedia = media;
-              _logger.log( "Media Changed: " + media.name );
-              _this.dispatch( "mediachanged", media );
-              return _currentMedia;
-            } //if
-          },
-          enumerable: true
-        },
-        selectedEvents: {
-          get: function() {
-            return _selectedEvents;
-          },
-          set: function(selectedEvents) {
-            _selectedEvents = selectedEvents;
-          },
-          enumerable: true
-        },
-        debug: {
-          get: function() {
-            return Logger.enabled();
-          },
-          set: function( value ) {
-            Logger.enabled( value );
-          },
-          enumerable: true
-        }
-      });
-
-      var preparePage = this.preparePage = function( callback ){
-        var scrapedObject = _page.scrape(),
+      preparePage: function( callback ){
+        var scrapedObject = Butter.page.scrape(),
             targets = scrapedObject.target,
             medias = scrapedObject.media;
 
-        _page.prepare(function() {
-          if ( !!_config.value( "scrapePage" ) ) {
+        Butter.page.prepare(function() {
+          if ( !!Butter.config.value( "scrapePage" ) ) {
             var i, j, il, jl, url, oldTarget, oldMedia, mediaPopcornOptions, mediaObj;
             for( i = 0, il = targets.length; i < il; ++i ) {
               oldTarget = null;
-              if( _targets.length > 0 ){
-                for( j = 0, jl = _targets.length; j < jl; ++j ){
+              if( Butter.targets.length > 0 ){
+                for( j = 0, jl = Butter.targets.length; j < jl; ++j ){
                   // don't add the same target twice
-                  if( _targets[ j ].id === targets[ i ].id ){
-                    oldTarget = _targets[ j ];
+                  if( Butter.targets[ j ].id === targets[ i ].id ){
+                    oldTarget = Butter.targets[ j ];
                     break;
                   } //if
                 } //for j
               }
 
               if( !oldTarget ){
-                _this.addTarget({ element: targets[ i ].id });
+                Butter.addTarget({ element: targets[ i ].id });
               }
             }
 
@@ -547,22 +396,22 @@
                 url = mediaObj.currentSrc;
               }
 
-              if( _media.length > 0 ){
-                for( j = 0, jl = _media.length; j < jl; ++j ){
-                  if( _media[ j ].id !== medias[ i ].id && _media[ j ].url !== url ){
-                    oldMedia = _media[ j ];
+              if( Butter.media.length > 0 ){
+                for( j = 0, jl = Butter.media.length; j < jl; ++j ){
+                  if( Butter.media[ j ].id !== medias[ i ].id && Butter.media[ j ].url !== url ){
+                    oldMedia = Butter.media[ j ];
                     break;
                   } //if
                 } //for
               }
               else{
-                if( _config.value( "mediaDefaults" ) ){
-                  mediaPopcornOptions = _config.value( "mediaDefaults" );
+                if( Butter.config.value( "mediaDefaults" ) ){
+                  mediaPopcornOptions = Butter.config.value( "mediaDefaults" );
                 }
               } //if
 
               if( !oldMedia ){
-                _this.addMedia({ target: medias[ i ].id, url: url, popcornOptions: mediaPopcornOptions });
+                Butter.addMedia({ target: medias[ i ].id, url: url, popcornOptions: mediaPopcornOptions });
               }
             } //for
           }
@@ -571,20 +420,12 @@
             callback();
           } //if
           
-          _this.dispatch( "pageready" );
+          Butter.dispatch( "pageready" );
         });
-      }; //preparePage
+      },
 
-      __instances.push( this );
-
-      if( butterOptions.ready ){
-        _this.listen( "ready", function( e ){
-          butterOptions.ready( e.data );
-        });
-      } //if
-
-      var preparePopcornScriptsAndCallbacks = this.preparePopcornScriptsAndCallbacks = function( readyCallback ){
-        var popcornConfig = _config.value( "popcorn" ) || {},
+      preparePopcornScriptsAndCallbacks: function( readyCallback ){
+        var popcornConfig = Butter.config.value( "popcorn" ) || {},
             callbacks = popcornConfig.callbacks,
             scripts = popcornConfig.scripts,
             toLoad = [],
@@ -648,118 +489,142 @@
           // otherwise, call the ready callback right away
           readyCallback();
         }
-      };
+      },
 
-      function attemptDataLoad( finishedCallback ){
-        if ( _config.value( "savedDataUrl" ) ) {
+      addTarget: function ( target ) {
+        if ( !(target instanceof Target ) ) {
+          target = new Target( target );
+        }
+        Butter.targets.push( target );
+        target.listen( "trackeventrequested", targetTrackEventRequested );
+        _logger.log( "Target added: " + target.name );
+        Butter.dispatch( "targetadded", target );
+        if( target.isDefault ){
+          _defaultTarget = target;
+        }
+        return target;
+      },
 
+      removeTarget: function ( target ) {
+        if ( typeof(target) === "string" ) {
+          target = Butter.getTargetByType( "id", target );
+        }
+        var idx = Butter.targets.indexOf( target );
+        if ( idx > -1 ) {
+          target.unlisten( "trackeventrequested", targetTrackEventRequested );
+          Butter.targets.splice( idx, 1 );
+          delete Butter.targets[ target.name ];
+          Butter.dispatch( "targetremoved", target );
+          if( _defaultTarget === target ){
+            _defaultTarget = undefined;
+          }
+          return target;
+        }
+        return undefined;
+      },
+
+      serializeTargets: function () {
+        var sTargets = [];
+        for ( var i=0, l=Butter.targets.length; i<l; ++i ) {
+          sTargets.push( Butter.targets[ i ].json );
+        }
+        return sTargets;
+      },
+
+      getTargetByType: function( type, val ) {
+        for( var i = 0, l = Butter.targets.length; i < l; i++ ) {
+          if ( Butter.targets[ i ][ type ] === val ) {
+            return Butter.targets[ i ];
+          }
+        }
+        return undefined;
+      },
+
+      getHTML: function(){
+        var media = [];
+        for( var i = 0; i < Butter.media.length; ++i ){
+          media.push( Butter.media[ i ].generatePopcornString() );
+        }
+        return Page.getHTML( media );
+      },
+
+      init: function( butterOptions ) {
+        butterOptions = butterOptions || {};
+
+        if ( butterOptions.debug !== undefined ) {
+          Logger.enabled( butterOptions.debug );
+        }
+
+        if( butterOptions.ready ){
+          Butter.listen( "ready", function( e ){
+            butterOptions.ready( e.data );
+          });
+        }
+
+        if( butterOptions.config && typeof( butterOptions.config ) === "string" ){
           var xhr = new XMLHttpRequest(),
-              savedDataUrl = _config.value( "savedDataUrl" ) + "?noCache=" + Date.now(),
-              savedData;
+              userConfig,
+              url = butterOptions.config + "?noCache=" + Date.now();
 
-          xhr.open( "GET", savedDataUrl, false );
-
+          xhr.open( "GET", url, false );
           if( xhr.overrideMimeType ){
             // Firefox generates a misleading "syntax" error if we don't have this line.
             xhr.overrideMimeType( "application/json" );
           }
-
           // Deal with caching
           xhr.setRequestHeader( "If-Modified-Since", "Fri, 01 Jan 1960 00:00:00 GMT" );
           xhr.send( null );
 
-          if( xhr.status === 200 ){
+          if( xhr.status === 200 || xhr.status === 0 ){
             try{
-              savedData = JSON.parse( xhr.responseText );
+              userConfig = Config.parse( xhr.responseText );
             }
             catch( e ){
-              _this.dispatch( "loaddataerror", "Saved data not formatted properly." );
+              throw new Error( "Butter config file not formatted properly." );
             }
-            _this.importProject( savedData );
+            readConfig( userConfig );
           }
-          else {
-            _logger.log( "Butter saved data not found: " + savedDataUrl );
+          else{
+            Butter.dispatch( "configerror" );
           }
         }
-
-        finishedCallback();
+        else {
+          readConfig( butterOptions.config );
+        }
       }
+    };
 
-      function readConfig( userConfig ){
-        // Overwrite default config options with user settings (if any).
-        if( userConfig ){
-          _defaultConfig.merge( userConfig );
+    Object.defineProperties( Butter, {
+      currentMedia: {
+        enumerable: true,
+        get: function() {
+          return Butter.currentMedia;
+        },
+        set: function( media ) {
+          if ( typeof( media ) === "string" ) {
+            media = Butter.getMediaByType( "id", media.id );
+          } //if
+
+          if ( media && Butter.media.indexOf( media ) > -1 ) {
+            Butter.currentMedia = media;
+            _logger.log( "Media Changed: " + media.name );
+            Butter.dispatch( "mediachanged", media );
+            return Butter.currentMedia;
+          } //if
         }
-
-        _config = _defaultConfig;
-
-        _this.project.template = _config.value( "name" );
-
-        //prepare modules first
-        var moduleCollection = Modules( _this, _config ),
-            loader = Dependencies( _config );
-
-        _this.loader = loader;
-
-        _page = new Page( loader, _config );
-
-        _this.ui = new UI( _this  );
-
-        _this.ui.load(function(){
-          //prepare the page next
-          preparePopcornScriptsAndCallbacks(function(){
-            preparePage(function(){
-              moduleCollection.ready(function(){
-                if( _config.value( "snapshotHTMLOnReady" ) ){
-                  _page.snapshotHTML();
-                }
-                attemptDataLoad(function(){
-                  //fire the ready event
-                  _this.dispatch( "ready", _this );
-                });
-              });
-            });
-          });
-        });
-
-      } //readConfig
-
-      if( butterOptions.config && typeof( butterOptions.config ) === "string" ){
-        var xhr = new XMLHttpRequest(),
-          userConfig,
-          url = butterOptions.config + "?noCache=" + Date.now();
-
-        xhr.open( "GET", url, false );
-        if( xhr.overrideMimeType ){
-          // Firefox generates a misleading "syntax" error if we don't have this line.
-          xhr.overrideMimeType( "application/json" );
+      },
+      debug: {
+        enumerable: true,
+        get: function() {
+          return Logger.enabled();
+        },
+        set: function( value ) {
+          Logger.enabled( value );
         }
-        // Deal with caching
-        xhr.setRequestHeader( "If-Modified-Since", "Fri, 01 Jan 1960 00:00:00 GMT" );
-        xhr.send( null );
-
-        if( xhr.status === 200 || xhr.status === 0 ){
-          try{
-            userConfig = Config.parse( xhr.responseText );
-          }
-          catch( e ){
-            throw new Error( "Butter config file not formatted properly." );
-          }
-          readConfig( userConfig );
-        }
-        else{
-          _this.dispatch( "configerror", _this );
-        } //if
       }
-      else {
-        readConfig( butterOptions.config );
-      } //if
+    });
 
-      this.page = _page;
-
-    }
-
-    Butter.instances = __instances;
+    EventManagerWrapper( Butter );
 
     // Butter will report a version, which is the git commit sha
     // of the version we ship.  This happens in make.js's build target.
@@ -767,10 +632,11 @@
 
     if ( window.Butter.__waiting ) {
       for ( var i=0, l=window.Butter.__waiting.length; i<l; ++i ) {
-        Butter.apply( {}, window.Butter.__waiting[ i ] );
+        Butter.init( window.Butter.__waiting[ i ] );
       }
       delete Butter._waiting;
-    } //if
+    }
+
     window.Butter = Butter;
     return Butter;
   });

@@ -2,7 +2,8 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define( [ "core/logger", "core/eventmanager" ], function( Logger, EventManagerWrapper ) {
+define( [ "core/config", "core/logger", "core/eventmanager", "dependencies" ],
+  function( Config, Logger, EventManagerWrapper ) {
 
   return function( loader, config ) {
 

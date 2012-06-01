@@ -196,6 +196,16 @@
         } catch( e ){
           throw "Config.parse Error: unable to parse config string. Error was: " + e.message;
         }
+      },
+
+      currentConfig: null,
+
+      value: function(){
+        Config.currentConfig.value.apply( Config.currentConfig, arguments );
+      },
+
+      merge: function(){
+        Config.currentConfig.merge.apply( Config.currentConfig, arguments );
       }
 
     };
