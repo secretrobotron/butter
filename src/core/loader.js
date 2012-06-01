@@ -112,8 +112,8 @@ define( [ "core/config" ], function( Config ) {
     return next;
   }
 
-  var Loader = {
-    init: function(){
+  Loader = {
+    init: function() {
       __configDirs = Config.value( "dirs" );
     },
 

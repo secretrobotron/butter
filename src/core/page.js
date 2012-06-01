@@ -2,18 +2,15 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define( [ "core/config", "core/logger", "core/eventmanager", "dependencies" ],
-  function( Config, Logger, EventManagerWrapper ) {
+define( [ "core/config", "core/logger", "core/eventmanager", "core/loader" ],
+  function( Config, Logger, EventManagerWrapper, Loader ) {
 
-  return function( loader, config ) {
+  var PLAYER_TYPE_URL = "{popcorn-js}/players/{type}/popcorn.{type}.js";
 
-    var PLAYER_TYPE_URL = "{popcorn-js}/players/{type}/popcorn.{type}.js";
+  var _snapshot;
 
-    var _snapshot;
-
-    EventManagerWrapper( this );
-
-    this.scrape = function() {
+  var Page = {
+    scrape: function() {
       var rootNode = document.body,
           targets = rootNode.querySelectorAll("*[data-butter='target']"),
           medias = rootNode.querySelectorAll("*[data-butter='media']");
@@ -22,10 +19,10 @@ define( [ "core/config", "core/logger", "core/eventmanager", "dependencies" ],
         media: medias,
         target: targets
       };
-    }; // scrape
+    },
 
-    this.prepare = function( readyCallback ){
-      loader.load([
+    prepare: function( readyCallback ){
+      Loader.load([
         {
           type: "js",
           url: "{popcorn-js}/popcorn.js",
@@ -41,19 +38,19 @@ define( [ "core/config", "core/logger", "core/eventmanager", "dependencies" ],
           }
         }
       ], readyCallback, null, true );
-    };
+    },
 
-    this.addPlayerType = function( type, callback ){
-      loader.load({
+    addPlayerType: function( type, callback ){
+      Loader.load({
         type: "js",
         url: PLAYER_TYPE_URL.replace( /\{type\}/g, type ),
         check: function(){
           return !!Popcorn[ type ];
         }
       }, callback );
-    };
+    },
 
-    this.getHTML = function( popcornStrings ){
+    getHTML: function( popcornStrings ){
       var html, head, body, i, l, toClean, toExclude, node, newNode, base, mediaElements;
 
       //html tag to which body and head are appended below
@@ -132,24 +129,29 @@ define( [ "core/config", "core/logger", "core/eventmanager", "dependencies" ],
       this.dispatch( "getHTML", html );
 
       return "<html>" + html.innerHTML + "</html>";
-    }; //getHTML
+    },
 
     /* Take a snapshot of the current DOM and store it.
      * Mainly for use with generatePopcornString() so as to not export unwanted DOM objects,
      * a snapshot can be taken at any time (usually up to the template author).
      */
-    this.snapshotHTML = function(){
+    snapshotHTML: function(){
       _snapshot = {
         head: document.getElementsByTagName( "head" )[ 0 ].cloneNode( true ),
         body: document.getElementsByTagName( "body" )[ 0 ].cloneNode( true )
       };
-    };
+    },
 
     /* Forget DOM snapshots previously taken
      */
-    this.eraseSnapshot = function(){
+    eraseSnapshot: function(){
       _snapshot = null;
-    };
+    }
 
-  }; // page
+  };
+
+  EventManagerWrapper( Page );
+
+  return Page;
+
 });

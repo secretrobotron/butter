@@ -2,8 +2,8 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button", "./header" ],
-        function( EventManagerWrapper, Toggler, LogoSpinner, ContextButton, Header ){
+define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button", "./header", "core/config" ],
+        function( EventManagerWrapper, Toggler, LogoSpinner, ContextButton, Header, Config ){
 
   var TRANSITION_DURATION = 500,
       BUTTER_CSS_FILE = "{css}/butter.ui.css";
@@ -95,7 +95,7 @@ define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button"
         _contentState = [],
         _state = true,
         _logoSpinner,
-        uiConfig = butter.config,
+        Config = butter.config,
         _this = this;
 
     EventManagerWrapper( _this );
@@ -123,7 +123,7 @@ define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button"
     _element.appendChild( _areas.work.element );
     _element.appendChild( _areas.tools.element );
 
-    if( uiConfig.value( "ui" ).enabled !== false ){
+    if( Config.value( "ui" ).enabled !== false ){
       document.body.classList.add( "butter-header-spacing" );
       document.body.classList.add( "butter-tray-spacing" );
       document.body.appendChild( _element );
@@ -133,7 +133,7 @@ define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button"
     }
 
     this.load = function( onReady ){
-      if( uiConfig.value( "ui" ).enabled !== false ){
+      if( Config.value( "ui" ).enabled !== false ){
         butter.loader.load(
           [
             {
@@ -143,7 +143,7 @@ define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button"
           ],
           function(){
             // icon preloading needs css to be loaded first
-            loadIcons( uiConfig.value( "icons" ), uiConfig.value( "dirs" ).resources || "" );
+            loadIcons( Config.value( "icons" ), Config.value( "dirs" ).resources || "" );
             onReady();
           }
         );
@@ -450,8 +450,8 @@ define( [ "core/eventmanager", "./toggler", "./logo-spinner", "./context-button"
       _this.visible = true;
       _toggler.visible = true;
       ContextButton( butter );
-      if( uiConfig.value( "ui" ).enabled !== false ){
-        Header( butter, uiConfig );
+      if( Config.value( "ui" ).enabled !== false ){
+        Header( butter, Config );
       }
     });
 

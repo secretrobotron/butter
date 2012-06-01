@@ -9,12 +9,12 @@
 
   define( [
             "core/eventmanager", "core/logger", "core/config", "core/target", "core/media", "core/page",
-            "./modules", "./dependencies", "ui/ui", "util/xhr", "util/lang",
+            "./modules", "core/loader", "ui/ui", "util/xhr", "util/lang",
             "text!default-config.json"
           ],
           function(
             EventManagerWrapper, Logger, Config, Target, Media, Page,
-            Modules, Dependencies, UI, XHR, Lang,
+            Modules, Loader, UI, XHR, Lang,
             DefaultConfigJSON
           ){
 
@@ -25,6 +25,8 @@
 
     var _defaultConfig,
         _defaultTarget;
+
+    var _currentMedia;
 
     var _logger = new Logger( "Butter" );
 
@@ -84,8 +86,8 @@
     }
 
     function targetTrackEventRequested( e ){
-      if( Butter.currentMedia ){
-        var trackEvent = trackEventRequested( e.data.element, Butter.currentMedia, e.target.elementID );
+      if( _currentMedia ){
+        var trackEvent = trackEventRequested( e.data.element, _currentMedia, e.target.elementID );
         Butter.dispatch( "trackeventcreated", {
           trackEvent: trackEvent,
           by: "target"
@@ -97,7 +99,7 @@
     }
 
     function mediaPlayerTypeRequired( e ){
-      Butter.page.addPlayerType( e.data );
+      Page.addPlayerType( e.data );
     }
 
     function mediaTrackEventRequested( e ){
@@ -109,7 +111,7 @@
     }
 
     function attemptDataLoad( finishedCallback ){
-      if ( Butter.config.value( "savedDataUrl" ) ) {
+      if ( Config.value( "savedDataUrl" ) ) {
 
         var xhr = new XMLHttpRequest(),
             savedDataUrl = Butter.config.value( "savedDataUrl" ) + "?noCache=" + Date.now(),
@@ -143,7 +145,7 @@
       finishedCallback();
     }
 
-    function readConfig( userConfig ){
+    function initWithConfig( userConfig ){
       // Overwrite default config options with user settings (if any).
       if( userConfig ){
         _defaultConfig.merge( userConfig );
@@ -154,20 +156,20 @@
 
       Butter.project.template = Config.value( "name" );
 
-      Dependencies.init();
-      Page.init();
+      Loader.init();
+      Modules.init( Butter );
       
-      Butter.loader = Dependencies;
+      Butter.loader = Loader;
       Butter.page = Page;
-      Butter.ui = new UI();
+      Butter.ui = new UI( Butter );
 
       Butter.ui.load(function(){
         //prepare the page next
         Butter.preparePopcornScriptsAndCallbacks(function(){
           Butter.preparePage(function(){
-            Modules.init(function(){
+            Modules.start(function(){
               if( Butter.config.value( "snapshotHTMLOnReady" ) ){
-                Butter.page.snapshotHTML();
+                Page.snapshotHTML();
               }
               attemptDataLoad(function(){
                 //fire the ready event
@@ -299,12 +301,12 @@
 
         var trackEvents;
         if ( media.tracks.length > 0 ) {
-          for ( var ti=0, tl=media.tracks.length; ti<tl; ++ti ) {
+          for ( var ti = 0, tl = media.tracks.length; ti < tl; ++ti ) {
             var track = media.tracks[ ti ];
                 trackEvents = track.trackEvents;
                 media.dispatch( "trackadded", track );
             if ( trackEvents.length > 0 ) {
-              for ( var i=0, l=trackEvents.length; i<l; ++i ) {
+              for ( var i = 0, l = trackEvents.length; i < l; ++i ) {
                 track.dispatch( "trackeventadded", trackEvents[ i ] );
               } //for
             } //if
@@ -314,9 +316,9 @@
         media.listen( "trackeventrequested", mediaTrackEventRequested );
         media.listen( "mediaplayertyperequired", mediaPlayerTypeRequired );
 
-         Butter.dispatch( "mediaadded", media );
-        if ( !Butter.currentMedia ) {
-          Butter.currentMedia = media;
+        Butter.dispatch( "mediaadded", media );
+        if ( !_currentMedia ) {
+          _currentMedia = media;
         } //if
         media.setupContent();
         return media;
@@ -345,8 +347,8 @@
           for ( var i=0, l=tracks.length; i<l; ++i ) {
             Butter.dispatch( "trackremoved", tracks[ i ] );
           } //for
-          if ( media === Butter.currentMedia ) {
-            Butter.currentMedia = undefined;
+          if ( media === _currentMedia ) {
+            _currentMedia = undefined;
           } //if
 
           media.unlisten( "trackeventrequested", mediaTrackEventRequested );
@@ -359,11 +361,11 @@
       },
 
       preparePage: function( callback ){
-        var scrapedObject = Butter.page.scrape(),
+        var scrapedObject = Page.scrape(),
             targets = scrapedObject.target,
             medias = scrapedObject.media;
 
-        Butter.page.prepare(function() {
+        Page.prepare(function() {
           if ( !!Butter.config.value( "scrapePage" ) ) {
             var i, j, il, jl, url, oldTarget, oldMedia, mediaPopcornOptions, mediaObj;
             for( i = 0, il = targets.length; i < il; ++i ) {
@@ -550,7 +552,6 @@
 
       init: function( butterOptions ) {
         butterOptions = butterOptions || {};
-
         if ( butterOptions.debug !== undefined ) {
           Logger.enabled( butterOptions.debug );
         }
@@ -582,14 +583,14 @@
             catch( e ){
               throw new Error( "Butter config file not formatted properly." );
             }
-            readConfig( userConfig );
+            initWithConfig( userConfig );
           }
           else{
             Butter.dispatch( "configerror" );
           }
         }
         else {
-          readConfig( butterOptions.config );
+          initWithConfig( butterOptions.config );
         }
       }
     };
@@ -598,7 +599,7 @@
       currentMedia: {
         enumerable: true,
         get: function() {
-          return Butter.currentMedia;
+          return _currentMedia;
         },
         set: function( media ) {
           if ( typeof( media ) === "string" ) {
@@ -606,10 +607,10 @@
           } //if
 
           if ( media && Butter.media.indexOf( media ) > -1 ) {
-            Butter.currentMedia = media;
+            _currentMedia = media;
             _logger.log( "Media Changed: " + media.name );
             Butter.dispatch( "mediachanged", media );
-            return Butter.currentMedia;
+            return _currentMedia;
           } //if
         }
       },
@@ -632,7 +633,7 @@
 
     if ( window.Butter.__waiting ) {
       for ( var i=0, l=window.Butter.__waiting.length; i<l; ++i ) {
-        Butter.init( window.Butter.__waiting[ i ] );
+        Butter.init.apply( this, window.Butter.__waiting[ i ] );
       }
       delete Butter._waiting;
     }

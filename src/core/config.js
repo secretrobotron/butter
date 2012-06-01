@@ -201,11 +201,11 @@
       currentConfig: null,
 
       value: function(){
-        Config.currentConfig.value.apply( Config.currentConfig, arguments );
+        return Config.currentConfig.value.apply( Config.currentConfig, arguments );
       },
 
       merge: function(){
-        Config.currentConfig.merge.apply( Config.currentConfig, arguments );
+        return Config.currentConfig.merge.apply( Config.currentConfig, arguments );
       }
 
     };
