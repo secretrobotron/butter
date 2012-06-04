@@ -210,10 +210,6 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop" ], function( Logg
       _this.dispatch( "trackeventmouseout", { originalEvent: e, trackEvent: trackEvent } );
     }, false );
 
-    _element.addEventListener( "dblclick", function ( e ) {
-      _this.dispatch( "trackeventdoubleclicked", { originalEvent: e, trackEvent: trackEvent } );
-    }, false);
-
     function select( e ){
       _draggable.selected = true;
       _element.setAttribute( "selected", true );
