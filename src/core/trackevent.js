@@ -92,7 +92,8 @@ define( [
      */
     this.update = function( updateOptions, applyDefaults ) {
       var newStart = _popcornOptions.start,
-          newEnd = _popcornOptions.end;
+          newEnd = _popcornOptions.end,
+          manifestOptions;
 
       if ( updateOptions.start ) {
         if ( !isNaN( updateOptions.start ) ) {
@@ -125,21 +126,22 @@ define( [
         }
       }
 
-      var manifest = this.manifest;
-      for ( var prop in manifest ) {
-        if ( manifest.hasOwnProperty( prop ) ) {
-          if ( updateOptions[ prop ] === undefined && applyDefaults ) {
-            _popcornOptions[ prop ] = defaultValue( manifest[ prop ] );
-          } else {
-            _popcornOptions[ prop ] = updateOptions[ prop ];
-          }
-
-          if ( !( "target" in manifest ) && updateOptions.target ) {
-            _popcornOptions.target = updateOptions.target;
+      if ( this.manifest ) {
+        manifestOptions = this.manifest.options;
+        for ( var prop in manifestOptions ) {
+          if ( manifestOptions.hasOwnProperty( prop ) ) {
+            if ( updateOptions[ prop ] === undefined && applyDefaults ) {
+              _popcornOptions[ prop ] = defaultValue( manifestOptions[ prop ] );
+            } else {
+              _popcornOptions[ prop ] = updateOptions[ prop ];
+            }
           }
         }
+        if ( !( "target" in manifestOptions ) && updateOptions.target ) {
+          _popcornOptions.target = updateOptions.target;
+        }
       }
-
+      
       if( newStart ){
         _popcornOptions.start = newStart;
       }
