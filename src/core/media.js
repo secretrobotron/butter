@@ -153,8 +153,7 @@
           "trackeventremoved",
           "trackeventupdated",
           "trackeventselected",
-          "trackeventdeselected",
-          "trackeventeditrequested"
+          "trackeventdeselected"
         ]);
         track.popcorn = _popcornWrapper;
         track.listen( "trackeventadded", onTrackEventAdded );
@@ -193,8 +192,7 @@
             "trackeventremoved",
             "trackeventupdated",
             "trackeventselected",
-            "trackeventdeselected",
-            "trackeventeditrequested"
+            "trackeventdeselected"
           ]);
           track.unlisten( "trackeventadded", onTrackEventAdded );
           track.unlisten( "trackeventupdated", onTrackEventUpdated );

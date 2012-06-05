@@ -374,8 +374,7 @@
           "tracktargetchanged",
           "trackeventadded",
           "trackeventremoved",
-          "trackeventupdated",
-          "trackeventeditrequested"
+          "trackeventupdated"
         ]);
 
         var trackEvents;
@@ -420,8 +419,7 @@
             "tracktargetchanged",
             "trackeventadded",
             "trackeventremoved",
-            "trackeventupdated",
-            "trackeventeditrequested"
+            "trackeventupdated"
           ]);
           var tracks = media.tracks;
           for ( var i=0, l=tracks.length; i<l; ++i ) {

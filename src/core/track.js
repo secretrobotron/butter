@@ -149,8 +149,7 @@ define( [
       _this.chain( trackEvent, [
         "trackeventupdated",
         "trackeventselected",
-        "trackeventdeselected",
-        "trackeventeditrequested"
+        "trackeventdeselected"
       ]);
       _view.addTrackEvent( trackEvent );
       trackEvent.track = _this;
@@ -165,8 +164,7 @@ define( [
         _this.unchain( trackEvent, [
           "trackeventupdated",
           "trackeventselected",
-          "trackeventdeselected",
-          "trackeventeditrequested"
+          "trackeventdeselected"
         ]);
         _view.removeTrackEvent( trackEvent );
         trackEvent._track = null;
