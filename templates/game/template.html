@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="template.css">
+    <script type="text/javascript" src="lib/box2d.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function(e){
+        var _world, _currentTime, _lastTime;
+
+        var requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       || 
+                  window.webkitRequestAnimationFrame || 
+                  window.mozRequestAnimationFrame    || 
+                  window.oRequestAnimationFrame      || 
+                  window.msRequestAnimationFrame     || 
+                  function( callback ){
+                    window.setTimeout(callback, 1000 / 60);
+                  };
+        })();
+
+        function Platform(){
+          var shape, bodyDef, body;
+
+          shape = new Box2D.b2PolygonShape();
+          shape.SetAsBox(200, 100);
+
+          bodyDef = new Box2D.b2BodyDef();
+          bodyDef.set_position(new Box2D.b2Vec2(0.0, 0.0));
+
+          body = _world.CreateBody(bodyDef);
+          body.CreateFixture(shape, 0.0);
+
+          this.setPosition = function(position){
+            var positionVector = new Box2D.b2Vec2(0.0, 0.0);
+            positionVector.Set(position[0], position[1]);
+            body.SetTransform(positionVector, 0.0);
+          };
+
+          this.getPosition = function(){
+            var position = body.GetPosition();
+            return [
+              position.get_x(),
+              position.get_y()
+            ];
+          };
+
+          var element = document.createElement('div');
+          element.classList.add('platform');
+          element.style.width = '200px';
+          element.style.height = '100px';
+          document.body.appendChild(element);
+
+          this.update = function(){
+            var position = body.GetPosition();
+            element.style.left = position.get_x() + 'px';
+            element.style.top = position.get_y() - 100 + 'px';
+          };
+        }
+
+        function Player(){
+          var shape, bodyDef, body;
+
+          shape = new Box2D.b2PolygonShape();
+          shape.SetAsBox(50, 50);
+
+          bodyDef = new Box2D.b2BodyDef();
+          bodyDef.set_type(Box2D.b2_dynamicBody);
+          bodyDef.set_position(new Box2D.b2Vec2(0.0, 0.0));
+
+          body = _world.CreateBody(bodyDef);
+          body.CreateFixture(shape, 1.0);
+
+          body.SetFixedRotation(true);
+
+          this.setPosition = function(position){
+            var positionVector = new Box2D.b2Vec2(0.0, 0.0);
+            positionVector.Set(position[0], position[1]);
+            body.SetTransform(positionVector, 0.0);
+          };
+
+          this.getPosition = function(){
+            var position = body.GetPosition();
+            return [
+              position.get_x(),
+              position.get_y()
+            ];
+          };
+
+          this.jump = function(){
+            body.ApplyLinearImpulse(new Box2D.b2Vec2(0, -body.GetMass() * 1000000000), body.GetLocalCenter());
+          };
+
+          var element = document.createElement('div');
+          element.classList.add('player');
+          element.style.width = '50px';
+          element.style.height = '50px';
+          document.body.appendChild(element);
+
+          this.update = function(){
+            var position = body.GetPosition();
+            element.style.left = position.get_x() + 'px';
+            element.style.top = position.get_y() + 'px';
+          };
+        }
+
+        var gravity = new Box2D.b2Vec2(0.0, 100.0);
+
+        _world = new Box2D.b2World(gravity);
+
+        var player = new Player();
+        var platform = new Platform();
+
+        platform.setPosition([30, 500]);
+
+        function update(){
+          var dt;
+
+          _currentTime = Date.now();
+          dt = _currentTime - _lastTime;
+
+          _world.Step(dt/1000, 2, 2);
+
+          _lastTime = _currentTime;
+          requestAnimFrame(update);
+
+          platform.update();
+          player.update();
+        }
+
+        _currentTime = _lastTime = Date.now();
+
+        window.addEventListener('keydown', function(e){
+          if(e.which === 32){
+            player.jump();  
+          }
+        }, false);
+
+        requestAnimFrame(update);
+      }, false);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

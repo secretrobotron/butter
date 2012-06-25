@@ -1,0 +1,22 @@
+html{
+  width: 100%;
+}
+
+body{
+  width: 100%;
+}
+
+.platform{
+  position: absolute;
+  border: 1px solid #000;
+}
+
+.world{
+  position: absolute;
+  border: 1px solid #000;
+}
+
+.player{
+  position: absolute;
+  border: 1px solid #000;
+}
