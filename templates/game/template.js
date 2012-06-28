@@ -3,8 +3,8 @@
     context: 'game',
   });
 
-  ctx(['lib/box2d.js', 'lib/gl-matrix-min.js', 'objects/platform', 'objects/player', 'engine/world'],
-    function(Box2D, GLMatrix, Platform, Player, World){
+  ctx(['lib/box2d.js', 'platform', 'player'],
+    function(Box2DDummy, Platform, Player){
 
     var requestAnimFrame = (function(){
       return  window.requestAnimationFrame       || 
@@ -17,52 +17,37 @@
               };
     })();
 
-    var currentTime, lastTime;
+    var gravity = new Box2D.b2Vec2(0.0, 9.8);
+    var world = new Box2D.b2World(gravity);
+     var currentTime = 0;
+     var lastTime = 0;
 
-    var platform = new Platform({
-      width: 200,
-      height: 100
-    });
+     var player = new Player(world);
+    // var platform = new Platform(world);
 
-    var player = new Player();
+    // player.setPosition([250, 170]);
+    // platform.setPosition([250, 250]);
 
-    var world = new World({
-      width: 800,
-      height: 600
-    });
+    // function update(){
+    //   var dt;
 
-    world.addEntity(platform);
-    world.addEntity(player);
+    //   currentTime = Date.now();
+    //   dt = currentTime - lastTime;
 
-    world.setActive(true);
+    //   world.Step(dt, 2, 2);
 
-    // Butter({
-    //   config: 'template.conf'
-    // });
+    //   lastTime = currentTime;
 
-    platform.setPosition([70, 200]);
-    player.setPosition([30, 0]);
+    //   platform.update();
+    //   player.update();
 
-    function update(){
-      var dt;
+    //   requestAnimFrame(update);
+    // }
 
-      currentTime = Date.now();
-      dt = currentTime - lastTime;
+    // currentTime = lastTime = Date.now();
 
-      world.update(dt);
-
-      lastTime = currentTime;
-      requestAnimFrame(update);
-    }
-
-    currentTime = lastTime = Date.now();
-
-    window.addEventListener('keydown', function(e){
-      player.jump();
-    }, false);
-
-    requestAnimFrame(update);
-
+    // requestAnimFrame(update);
+    
   });
 
 })();
