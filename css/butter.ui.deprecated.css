@@ -855,15 +855,13 @@ input.form-error {
   bottom: -170px;
 }
 
-#butter-tray #toggle-button {
+.butter-toggle-button {
   height: 30px;
   width: 50px;
   background-image: url( "../resources/bg.jpg" );
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   position: absolute;
-  top: -23px;
-  right: 10px;
   -moz-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
   -o-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
   -webkit-box-shadow: inset 0 -3px 5px #222, 1px -1px 1px #222, -1px -1px 1px #222;
@@ -871,7 +869,7 @@ input.form-error {
   z-index: -1;
 }
 
-#butter-tray #toggle-button:hover {
+.butter-toggle-button:hover {
   -moz-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
   -o-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
   -webkit-box-shadow: inset 0 -3px 5px #000, 1px -1px 1px #000, -1px -1px 1px #000;
@@ -879,7 +877,7 @@ input.form-error {
   cursor: pointer;
 }
 
-#butter-tray #toggle-button div {
+.butter-toggle-button div {
   background-image: url("../resources/buttons.png");
   background-position: -255px 10px;
   width: 15px;
@@ -889,8 +887,23 @@ input.form-error {
   margin: 0 18px 0 18px;
 }
 
-#butter-tray[ data-ui-state="hidden" ] #toggle-button div {
-  background-position: -255px -7px;
+.butter-toggle-button.toggled > div {
+  background-position: -255px -9px;
+}
+
+#butter-tray .butter-toggle-button {
+  top: -23px;
+  right: 10px;
+}
+
+.butter-editor-area .butter-toggle-button {
+  top: 14px;
+  left: -38px;
+  -moz-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 
 #status-bar {
@@ -1500,6 +1513,10 @@ input.form-error {
   border-left: 1px solid #222;
   box-shadow: inset 5px 0 5px rgba(0,0,0,.2);
   color: #EEE;
+}
+
+.butter-editor-area.minimized {
+  right: -200px;
 }
 
 .butter-editor-area > .butter-editor {
