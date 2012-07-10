@@ -2,28 +2,14 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define( [
-          "core/trackevent",
-          "core/track",
-          "core/eventmanager",
-          "./track-container",
-          "util/scrollbars",
-          "./timebar",
-          "./zoombar",
-          "./status",
-          "./trackhandles",
-        ],
-        function(
-          TrackEvent,
-          Track,
-          EventManagerWrapper,
-          TrackContainer,
-          Scrollbars,
-          TimeBar,
-          ZoomBar,
-          Status,
-          TrackHandles
-        ) {
+define( [ "core/trackevent", "core/track", "core/eventmanager",
+          "./track-container", "util/scrollbars", "./timebar",
+          "./zoombar", "./status", "./trackhandles",
+          "./super-scrollbar" ],
+  function( TrackEvent, Track, EventManagerWrapper,
+            TrackContainer, Scrollbars, TimeBar,
+            ZoomBar, Status, TrackHandles,
+            SuperScrollbar ) {
 
   var MIN_ZOOM = 300,
       DEFAULT_ZOOM = 0.5;
@@ -50,6 +36,7 @@ define( [
         _mediaStatusContainer = document.createElement( "div" ),
         _hScrollBar = new Scrollbars.Horizontal( _tracksContainer.element, _tracksContainer.container ),
         _vScrollBar = new Scrollbars.Vertical( _tracksContainer.element, _tracksContainer.container ),
+        _superScrollbar = new SuperScrollbar(),
         _shrunken = false,
         _timebar = new TimeBar( butter, _media, _tracksContainer, _hScrollBar ),
         _zoombar = new ZoomBar( zoomCallback ),
@@ -150,7 +137,8 @@ define( [
       _media.listen( "mediaready", onMediaReady );
 
       _container.appendChild( _tracksContainer.element );
-      _container.appendChild( _hScrollBar.element );
+      //_container.appendChild( _hScrollBar.element );
+      _container.appendChild( _superScrollbar.element );
       _container.appendChild( _vScrollBar.element );
       _mediaStatusContainer.appendChild( _timebar.element );
       _mediaStatusContainer.appendChild( _status.statusElement );
