@@ -1,8 +1,9 @@
 {
   "name": "test-config-core",
-  "savedDataUrl": "../saved-data-0000.json",
+  "savedDataUrl": "../core/saved-data-0000.json",
   "scrapePage": false,
   "baseDir": "../../",
+  "makeVideoURLsUnique": false,
   "ui": {
     "enabled": false
   },

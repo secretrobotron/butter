@@ -8,7 +8,7 @@
           return document.createElement( type );
         },
         index = 0,
-        testFrame = id( "test-frame" ),
+        testFrame,
         results = id( "qunit-tests" ),
         totalPass = 0,
         totalFail = 0,
@@ -19,7 +19,9 @@
         results_arr = [],
         currentTest,
         testList = [],
-        userAgent = id( "qunit-userAgent" );
+        userAgent = id( "qunit-userAgent" ),
+        firstTest = true,
+        testBase = location.protocol + "//" + location.hostname + ( location.port ? ":" + location.port : "" ) + "/";
 
 
     if ( userAgent ) {
@@ -38,7 +40,6 @@
           b,
           ol,
           a,
-          oneTest,
           time,
           type,
           fail = 0,
@@ -115,6 +116,24 @@
       }
     }
 
+    function createFrame( testPath ) {
+      // Finish test suite; display totals
+      if ( !firstTest ) {
+       testFrame.parentNode.removeChild( testFrame );
+      }
+      else {
+        firstTest = false;
+      }
+      testFrame = document.createElement( "iframe" );
+      testFrame.onload = function() {
+        testFrame.contentWindow.focus();
+      };
+      // Tells the tests within the iframe to take focus
+      testFrame.addEventListener( "load", sendGetFocus, false );
+      testFrame.src = currentTest.path;
+      document.body.appendChild( testFrame );
+    }
+
     function advance() {
       if ( ++index < testList.length ) {
         currentTest = testList[ index ];
@@ -124,10 +143,7 @@
         mainLi.appendChild( mainB );
         mainLi.className = "running";
         results.appendChild( mainLi );
-        testFrame.onload = function() {
-          testFrame.contentWindow.focus();
-        };
-        testFrame.src = currentTest.path;
+        createFrame( currentTest.path );
       } else {
         // Finish test suite; display totals
         testFrame.parentNode.removeChild( testFrame );
@@ -155,10 +171,10 @@
       }
     }
 
-    this.getTests = function( loadedCallback ) {
+    this.getTests = function( testConf, loadedCallback ) {
       var xhr = new XMLHttpRequest();
 
-      xhr.open( "GET", "../tests.conf", false );
+      xhr.open( "GET", testConf, false );
       xhr.onreadystatechange = function() {
         if ( xhr.readyState === 4 ) {
           var allTests = JSON.parse( xhr.responseText ),
@@ -173,19 +189,11 @@
               testGroup = allTests[ x ];
               for ( var f in testGroup ) {
                 if ( testGroup[ f ] ) {
-                  testName = f.charAt( 0 ).toUpperCase() + f.slice( 1 );
                   testList.push({
-                    "name": testName,
-                    "path": "../" + testGroup[ f ],
+                    "name": f.charAt( 0 ).toUpperCase() + f.slice( 1 ),
+                    "path": testBase + testGroup[ f ],
                     "type": testGroup
                   });
-
-                  anchor = document.createElement( "a" );
-                  anchor.target = "_blank";
-                  anchor.href = "../" + testGroup[ f ];
-                  anchorText = document.createTextNode( testName );
-                  anchor.appendChild( anchorText );
-                  testLinks.appendChild( anchor );
                 }
               }
             }
@@ -206,12 +214,9 @@
         mainLi.className = "running";
         results.appendChild( mainLi );
 
-        testFrame.src = currentTest.path;
+        createFrame( currentTest.path );
       }
     };
-
-    // Tells the tests within the iframe to take focus
-    testFrame.addEventListener( "load", sendGetFocus, false );
 
     // Populate the userAgent h2 with information, if available
     if ( userAgent ) {
@@ -223,11 +228,4 @@
       receiveResults( e.data );
     });
   };
-
-  document.addEventListener( "DOMContentLoaded", function() {
-    var runner = new TestRunner();
-    runner.getTests(function() {
-      runner.runTests();
-    });
-  });
 }());

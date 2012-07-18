@@ -92,13 +92,14 @@
     });
 
     test( "Overriding Configuration", function(){
-      var config1 = Config.parse( JSON.stringify({"foo1": "bar1"}) ),
-          config2 = Config.parse( JSON.stringify({"foo2": "bar2"}) );
+      var config1 = Config.parse( JSON.stringify({"foo1": "bar1", "foo3": "bar3"}) ),
+          config2 = Config.parse( JSON.stringify({"foo2": "bar2", "foo3": "bar4"}) );
 
       config1.override( config2 );
 
       equal( config1.value( "foo1" ), "bar1", "config1 uses its own values" );
       equal( config1.value( "foo2" ), config2.value( "foo2" ), "config1 uses overrided values" );
+      equal( config1.value( "foo3" ), config2.value( "foo3" ), "config1 uses overrided values when configs share same property" );
 
     });
 
