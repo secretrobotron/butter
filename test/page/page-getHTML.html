@@ -20,29 +20,27 @@
             function runTests() {
               callback( butter );
             }
-            butterLifeCycle.rememberButter( butter );
             butter.currentMedia.onReady( runTests );
           }
         });
       }
 
-      module( "Page", butterLifeCycle );
       asyncTest( "getHTML functionality", 9, function() {
         createButter( function( butter ) {
           var fakeScript = [ "var i = 1 + 1;" ],
               html = butter.page.getHTML( fakeScript ),
               testDiv = document.createElement( "div" ),
-              headString = html.substring( html.indexOf( "<head>" ) + 6, html.indexOf( "</head>" ) ),
+              headString = html.substring( html.indexOf( "<head>" ) + 6, html.lastIndexOf( "</head>" ) ),
               expectedBaseSrc = location.protocol + "//" + location.hostname + ( location.port ? ":" + location.port : "" ) + "/test/page/",
-              bodyString = html.substring( html.indexOf( "<body>" ) + 6, html.indexOf( "</body>" ) );
+              bodyString = html.substring( html.lastIndexOf( "<body class=\"tray-minimized\">" ), html.lastIndexOf( "</body>" ) );
 
           // inject elements into div to test for expected elements
           testDiv.innerHTML = headString;
 
           // Check that all the expected butter attributes were removed
-          equal( html.indexOf( "data-butter-source" ), -1, "Removed all data-butter-source attributes" );
-          equal( html.indexOf( "data-butter-exclude" ), -1, "Removed all data-butter-exclude elements" );
-          equal( html.indexOf( "data-butter-default" ), -1, "Removed all data-butter-default attributes" );
+          equal( bodyString.indexOf( "data-butter-source" ), -1, "Removed all data-butter-source attributes" );
+          equal( bodyString.indexOf( "data-butter-exclude" ), -1, "Removed all data-butter-exclude elements" );
+          equal( bodyString.indexOf( "data-butter-default" ), -1, "Removed all data-butter-default attributes" );
 
           var baseTag = testDiv.getElementsByTagName( "base" )[ 0 ];
 

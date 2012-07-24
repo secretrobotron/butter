@@ -28,7 +28,6 @@
             _loader = Dependencies( _config ),
             _page = new Page( _loader, _config );
 
-        module( "Page" );
         asyncTest( "prepare script loading", 2, function() {
           function checkScripts() {
             ok( window.Popcorn, "prepare successfully loaded the Popcorn script" );
