@@ -6,8 +6,26 @@
     <script type="text/javascript" src="../qunit/qunit.js"></script>
     <script type="text/javascript" src="../inject.js"></script>
     <script type="text/javascript" src="../../../src/butter.js"></script>
-    <script type="text/javascript" src="media_addTrack.js"></script>
     <script src="../butter.inject.js"></script>
+    <script src="../test-utils.js"></script>
+    <script>
+      require( [ "../src/core/track" ], function( Track ) {
+        asyncTest( "addTrack functionality", 1, function() {
+          createButterModule( function( butter ) {
+            var track = new Track( { name: "TestTrack" } );
+
+            butter.listen( "trackadded", function( e ) {
+
+              butter.unlisten( "trackadded" );
+              equal( e.data.name, track.name, "addTrack returned expected track" );
+              start();
+            });
+
+            butter.currentMedia.addTrack( track );
+          });
+        });
+      });
+    </script>
   </head>
   <body>
     <h1 id="qunit-header">Butter API Test Suite [Media Module]</h1>

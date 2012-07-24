@@ -6,8 +6,19 @@
     <script type="text/javascript" src="../qunit/qunit.js"></script>
     <script type="text/javascript" src="../inject.js"></script>
     <script type="text/javascript" src="../../../src/butter.js"></script>
-    <script type="text/javascript" src="media_getTrackById.js"></script>
     <script src="../butter.inject.js"></script>
+    <script src="../test-utils.js"></script>
+    <script>
+      asyncTest( "getTrackById functionality", 1, function() {
+        createButterModule( function( butter ) {
+          var trackOne = butter.currentMedia.tracks[ 0 ],
+              trackTwo = butter.currentMedia.getTrackById( trackOne.id );
+
+          equal( trackOne.id, trackTwo.id, "getTrackById returned expected track event" );
+          start();
+        });
+      });
+    </script>
   </head>
   <body>
     <h1 id="qunit-header">Butter API Test Suite [Media Module]</h1>
