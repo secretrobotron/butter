@@ -21,41 +21,6 @@
         var createdManifestItems = [],
             createdManifestItems2 = [];
 
-        Butter.Editor.register( "text", layoutSrc, function( rootElement, butter ) {
-          Butter.Editor.TrackEventEditor( this, butter, rootElement, {
-            open: function( parentElement, trackEvent ) {
-              var contentContainer = rootElement.querySelector( ".content-container" );
-
-              this.createPropertiesFromManifest( trackEvent,
-                function( elementType, element, trackEvent, name ){
-                  createdManifestItems.push( name );
-                }, null, rootElement.querySelector( ".content-container" ), [ "start", "end", "target" ] );
-
-              ok( createdManifestItems.indexOf( "start" ) === -1, "start not created from manifest" );
-              ok( createdManifestItems.indexOf( "end" ) === -1, "end not created from manifest" );
-              ok( createdManifestItems.indexOf( "target" ) === -1, "target not created from manifest" );
-              ok( createdManifestItems.indexOf( "escape" ) > -1, "escape created from manifest" );
-              ok( createdManifestItems.indexOf( "multiline" ) > -1, "multiline created from manifest" );
-              ok( createdManifestItems.indexOf( "text" ) > -1, "text created from manifest" );
-
-              this.createPropertiesFromManifest( trackEvent,
-                function( elementType, element, trackEvent, name ){
-                  createdManifestItems2.push( name );
-                }, [ "start" ] );
-
-              ok( createdManifestItems2.indexOf( "start" ) > -1, "text created from manifest" );
-
-              ok( contentContainer.querySelectorAll( "*" ).length > 0, ".content-container was filled with manifest items" );
-              var startElement = rootElement.querySelector( "[data-manifest-key='start']" ).parentNode;
-              ok( startElement, "start element was created with correct data-manifest-key" );
-              ok( startElement.parentNode === rootElement, "start element was created outside of content-container" );
-              start();
-            },
-            close: function() {
-            }
-          });
-        });
-
         createButterModule( function( butter ) {
           var media = butter.addMedia(),
               track = media.addTrack(),
@@ -66,6 +31,41 @@
                   end: 6
                 }
               });
+
+          Butter.Editor.register( "text", layoutSrc, function( rootElement, butter ) {
+            Butter.Editor.TrackEventEditor( this, butter, rootElement, {
+              open: function( parentElement, trackEvent ) {
+                var contentContainer = rootElement.querySelector( ".content-container" );
+
+                this.createPropertiesFromManifest( trackEvent,
+                  function( elementType, element, trackEvent, name ){
+                    createdManifestItems.push( name );
+                  }, null, rootElement.querySelector( ".content-container" ), [ "start", "end", "target" ] );
+
+                ok( createdManifestItems.indexOf( "start" ) === -1, "start not created from manifest" );
+                ok( createdManifestItems.indexOf( "end" ) === -1, "end not created from manifest" );
+                ok( createdManifestItems.indexOf( "target" ) === -1, "target not created from manifest" );
+                ok( createdManifestItems.indexOf( "escape" ) > -1, "escape created from manifest" );
+                ok( createdManifestItems.indexOf( "multiline" ) > -1, "multiline created from manifest" );
+                ok( createdManifestItems.indexOf( "text" ) > -1, "text created from manifest" );
+
+                this.createPropertiesFromManifest( trackEvent,
+                  function( elementType, element, trackEvent, name ){
+                    createdManifestItems2.push( name );
+                  }, [ "start" ] );
+
+                ok( createdManifestItems2.indexOf( "start" ) > -1, "text created from manifest" );
+
+                ok( contentContainer.querySelectorAll( "*" ).length > 0, ".content-container was filled with manifest items" );
+                var startElement = rootElement.querySelector( "[data-manifest-key='start']" ).parentNode;
+                ok( startElement, "start element was created with correct data-manifest-key" );
+                ok( startElement.parentNode === rootElement, "start element was created outside of content-container" );
+                start();
+              },
+              close: function() {
+              }
+            });
+          });
 
           var editor = butter.editor.editTrackEvent( trackEvent );
         });

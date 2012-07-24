@@ -14,7 +14,7 @@
           butter.currentMedia.onReady( function() {
             var duration = butter.currentMedia.duration,
                 te = butter.currentMedia.tracks[ 1 ].trackEvents[ 0 ],
-                inc = 62,
+                inc = duration - 1,
                 oldStart = te.popcornOptions.start,
                 oldEnd = te.popcornOptions.end;
 
