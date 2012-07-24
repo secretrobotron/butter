@@ -130,8 +130,8 @@
       };
       // Tells the tests within the iframe to take focus
       testFrame.addEventListener( "load", sendGetFocus, false );
-      testFrame.src = currentTest.path;
       document.body.appendChild( testFrame );
+      testFrame.src = currentTest.path;
     }
 
     function advance() {
