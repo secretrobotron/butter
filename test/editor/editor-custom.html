@@ -49,7 +49,7 @@
               var startElement = rootElement.querySelector( "[data-manifest-key='start']" ).parentNode;
               ok( startElement, "start element was created with correct data-manifest-key" );
               ok( startElement.parentNode === rootElement, "start element was created outside of content-container" );
-
+              start();
             },
             close: function() {
             }
@@ -68,7 +68,6 @@
               });
 
           var editor = butter.editor.editTrackEvent( trackEvent );
-          start();
         });
       });
     </script>
