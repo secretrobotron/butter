@@ -22,7 +22,7 @@
             ok( true, "Media changed triggered" + mediaURLS[ index ] );
             equals( butter.currentMedia.url, mediaURLS[ index ], "The currentMedia's url is equal to the one that has been set" );
 
-            if( mediaURLS[ index + 1 ] === undefined ) {
+            if( index + 1 === mediaURLS.length ) {
               butter.unlisten( "mediaready", mediaReady );
               start();
             }
@@ -43,7 +43,7 @@
     <h2 id="qunit-userAgent"></h2>
     <ol id="qunit-tests"></ol>
     <div id="qunit-fixture">
-      <div id="mediaDiv"></div>
+      <div id="mediaDiv" style="width: 500px; height: 400px;"></div>
     </div>
   </body>
 </html>
