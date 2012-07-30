@@ -21,7 +21,7 @@
         testList = [],
         userAgent = id( "qunit-userAgent" ),
         firstTest = true,
-        testBase = location.protocol + "//" + location.hostname + ( location.port ? ":" + location.port : "" ) + "/";
+        testBase = location.href.substring( 0, location.href.lastIndexOf( "/" ) - 4 ); // Works on Node server and Apache now
 
 
     if ( userAgent ) {
