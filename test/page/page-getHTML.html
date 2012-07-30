@@ -43,6 +43,10 @@
 
           var baseTag = testDiv.getElementsByTagName( "base" )[ 0 ];
 
+          if ( baseTag.href.indexOf( "%7E" ) > -1 ) {
+            baseTag.href = baseTag.href.replace( /%7E/, "~" );
+          }
+
           equal( baseTag.href, expectedBaseSrc, "Generated expected base tag" );
 
           testDiv.innerHTML = bodyString;
