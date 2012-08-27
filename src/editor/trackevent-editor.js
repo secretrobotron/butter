@@ -98,27 +98,31 @@ define( [ "util/lang", "util/keys", "./base-editor",
 
     extendObject.defaultLayouts = __defaultLayouts.cloneNode( true );
 
-    extendObject.createTitle = function( trackEvent ) {
-      var titleEl = rootElement.querySelector( "h1" ),
-          addPopcornLink = document.createElement( "a" ),
-          closeEditorLink = document.createElement( "a" );
+    extendObject.createBreadcrumbs = function( trackEvent ) {
+      var oldTitleEl = rootElement.querySelector( "h1" ),
+          breadcrumbsLayout = extendObject.defaultLayouts.querySelector( ".butter-breadcrumbs" ),
+          backLink = breadcrumbsLayout.querySelector( ".butter-breadcrumbs-back" ),
+          editorTitle =  breadcrumbsLayout.querySelector( ".butter-editor-title" ),
+          closeEditorLink =  breadcrumbsLayout.querySelector( ".close-btn" );
 
-      closeEditorLink.classList.add( "close-btn" );
-      closeEditorLink.innerHTML = "<span class=\"icon icon-only icon-x\"></span>";
+      if ( !trackEvent ) {
+        return;
+      }
+      
       closeEditorLink.addEventListener( "click", function( e ) {
         extendObject.reset();
       }, false );
 
-      addPopcornLink.classList.add( "butter-breadcrumbs" );
-      addPopcornLink.innerHTML = "Events";
-      addPopcornLink.addEventListener( "click", function( e ) {
+      backLink.addEventListener( "click", function( e ) {
         extendObject.reset();
       }, false );
 
-      titleEl.innerHTML = "";
-      titleEl.appendChild( addPopcornLink );
-      titleEl.appendChild( document.createTextNode( trackEvent.type || "Event" ) );
-      titleEl.appendChild( closeEditorLink );
+      if ( trackEvent.type ) {
+        editorTitle.innerHTML = "";
+        editorTitle.appendChild( document.createTextNode( trackEvent.type ) );
+      }
+
+      oldTitleEl.parentNode.replaceChild( breadcrumbsLayout, oldTitleEl );
     };
 
     /**
@@ -455,7 +459,7 @@ define( [ "util/lang", "util/keys", "./base-editor",
         throw "Unable to create properties from null manifest. Perhaps trackevent is not initialized properly yet.";
       }
 
-      extendObject.createTitle( trackEvent );
+      extendObject.createBreadcrumbs( trackEvent );
 
       manifestOptions = trackEvent.manifest.options;
 

@@ -61,8 +61,6 @@ define( [ "text!./default.html", "editor/editor" ],
 
         _trackEvent = trackEvent;
 
-        _this.createTitle( _trackEvent );
-
         _this.createPropertiesFromManifest( trackEvent,
           function( elementType, element, trackEvent, name ){
             if ( elementType === "select" ) {
