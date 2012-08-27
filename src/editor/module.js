@@ -30,6 +30,7 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
     var _currentEditor,
         _editorAreaDOMRoot = LangUtils.domFragment( EDITOR_AREA_LAYOUT, ".butter-editor-area" ),
         _editorContentArea = _editorAreaDOMRoot.querySelector( ".butter-editor-content" ),
+        _defaultEditorName = "plugin-list",
         _header,
         _toggler,
         _this = this,
@@ -59,6 +60,10 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
       }
       _currentEditor = Editor.create( editorName, butter );
       _currentEditor.open( _editorContentArea, openData );
+
+      _currentEditor.reset = function() {
+        _this.openEditor( _defaultEditorName );
+      };
       
       _header.setFocus( editorName );
 

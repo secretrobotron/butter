@@ -92,8 +92,6 @@ define( [ "util/lang", "util/keys", "./base-editor",
         extendObject.scrollbar.update();
       }
 
-      extendObject.createTitle( trackEvent );
-
     };
 
     BaseEditor( extendObject, butter, rootElement, events );
@@ -108,18 +106,18 @@ define( [ "util/lang", "util/keys", "./base-editor",
       closeEditorLink.classList.add( "close-btn" );
       closeEditorLink.innerHTML = "<span class=\"icon icon-only icon-x\"></span>";
       closeEditorLink.addEventListener( "click", function( e ) {
-        extendObject.close();
+        extendObject.reset();
       }, false );
 
       addPopcornLink.classList.add( "butter-breadcrumbs" );
       addPopcornLink.innerHTML = "Events";
       addPopcornLink.addEventListener( "click", function( e ) {
-        extendObject.close();
+        extendObject.reset();
       }, false );
 
       titleEl.innerHTML = "";
       titleEl.appendChild( addPopcornLink );
-      titleEl.appendChild( document.createTextNode( trackEvent.type ) );
+      titleEl.appendChild( document.createTextNode( trackEvent.type || "Event" ) );
       titleEl.appendChild( closeEditorLink );
     };
 
@@ -456,6 +454,8 @@ define( [ "util/lang", "util/keys", "./base-editor",
       if ( !trackEvent.manifest ) {
         throw "Unable to create properties from null manifest. Perhaps trackevent is not initialized properly yet.";
       }
+
+      extendObject.createTitle( trackEvent );
 
       manifestOptions = trackEvent.manifest.options;
 
