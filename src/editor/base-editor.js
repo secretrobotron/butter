@@ -57,7 +57,7 @@ define( [ "core/eventmanager", "util/scrollbars", "ui/widget/tooltip" ],
 
       // Add tooltips
       extendObject.addTooltips();
-      
+
       extendObject.dispatch( "open" );
     };
 
@@ -66,16 +66,19 @@ define( [ "core/eventmanager", "util/scrollbars", "ui/widget/tooltip" ],
      *
      * Closes the editor
      */
-    extendObject.close = function() {
-      // Remove the editor's root element from the element to which it was attached
-      extendObject.rootElement.parentNode.removeChild( extendObject.rootElement );
-
-      // If a close event existed on the events object passed into the constructor, call it
-      if ( events.close ) {
-        events.close.apply( extendObject, arguments );
+    extendObject.close = function( reset ) {
+      // Dispatch the reset event, which opens the default editor
+      if ( reset ) {
+        extendObject.dispatch( "editor-reset" );
+      } else {
+        // Remove the editor's root element from the element to which it was attached
+        extendObject.rootElement.parentNode.removeChild( extendObject.rootElement );
+        // If a close event existed on the events object passed into the constructor, call it
+        if ( events.close ) {
+          events.close.apply( extendObject, arguments );
+        }
+        extendObject.dispatch( "closed" );
       }
-
-      extendObject.dispatch( "closed" );
     };
 
     /**

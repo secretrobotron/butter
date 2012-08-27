@@ -108,13 +108,13 @@ define( [ "util/lang", "util/keys", "./base-editor",
       if ( !trackEvent ) {
         return;
       }
-      
+
       closeEditorLink.addEventListener( "click", function( e ) {
-        extendObject.reset();
+        extendObject.close( true );
       }, false );
 
       backLink.addEventListener( "click", function( e ) {
-        extendObject.reset();
+        extendObject.close( true );
       }, false );
 
       if ( trackEvent.type ) {

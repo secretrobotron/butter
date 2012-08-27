@@ -61,10 +61,10 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
       _currentEditor = Editor.create( editorName, butter );
       _currentEditor.open( _editorContentArea, openData );
 
-      _currentEditor.reset = function() {
+      _currentEditor.listen( "editor-reset", function( e ) {
         _this.openEditor( _defaultEditorName );
-      };
-      
+      });
+
       _header.setFocus( editorName );
 
       return _currentEditor;
