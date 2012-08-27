@@ -91,7 +91,6 @@ define( [ "util/lang", "util/keys", "./base-editor",
       if ( extendObject.scrollbar ) {
         extendObject.scrollbar.update();
       }
-
     };
 
     BaseEditor( extendObject, butter, rootElement, events );

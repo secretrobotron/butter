@@ -60,7 +60,6 @@ define( [ "text!./default.html", "editor/editor" ],
         _this.applyExtraHeadTags( compiledLayout );
 
         _trackEvent = trackEvent;
-
         _this.createPropertiesFromManifest( trackEvent,
           function( elementType, element, trackEvent, name ){
             if ( elementType === "select" ) {
