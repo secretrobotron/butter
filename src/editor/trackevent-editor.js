@@ -109,11 +109,11 @@ define( [ "util/lang", "util/keys", "./base-editor",
       }
 
       closeEditorLink.addEventListener( "click", function( e ) {
-        extendObject.close( true );
+        extendObject.close();
       }, false );
 
       backLink.addEventListener( "click", function( e ) {
-        extendObject.close( true );
+        extendObject.close();
       }, false );
 
       if ( trackEvent.type ) {

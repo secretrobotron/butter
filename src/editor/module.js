@@ -42,6 +42,12 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
 
     _header = new Header( _editorAreaDOMRoot, _this );
 
+    var onEditorClosedFromWithin = function() {
+      _currentEditor.unlisten( "closed", onEditorClosedFromWithin );
+      _currentEditor = null;
+      _this.openEditor(_defaultEditorName);
+    };
+
     /**
      * Member: openEditor
      *
@@ -56,14 +62,13 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
       _toggler.state = false;
 
       if( _currentEditor ) {
+        _currentEditor.unlisten( "closed", onEditorClosedFromWithin );
         _currentEditor.close();
       }
       _currentEditor = Editor.create( editorName, butter );
       _currentEditor.open( _editorContentArea, openData );
 
-      _currentEditor.listen( "editor-reset", function( e ) {
-        _this.openEditor( _defaultEditorName );
-      });
+      _currentEditor.listen( "closed", onEditorClosedFromWithin );
 
       _header.setFocus( editorName );
 
