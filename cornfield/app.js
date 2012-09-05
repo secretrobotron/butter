@@ -134,8 +134,7 @@ app.post( '/api/publish/:id', filter.isLoggedIn, filter.isStorageAvailable, func
     }
 
     var i = 0,
-        template = project.template,
-        customData = JSON.parse( project.customData, sanitizer.escapeHTMLinJSON );
+        template = project.template;
 
     if( !( template && VALID_TEMPLATES[ template ] ) ) {
       res.json({ error: 'template not found' }, 500);
@@ -157,7 +156,6 @@ app.post( '/api/publish/:id', filter.isLoggedIn, filter.isStorageAvailable, func
           bodyEndTagIndex,
           externalAssetsString = '',
           popcornString = '',
-          customDataString = '',
           currentMedia,
           currentTrack,
           currentTrackEvent,
@@ -237,10 +235,8 @@ app.post( '/api/publish/:id', filter.isLoggedIn, filter.isStorageAvailable, func
       }
       popcornString += '</script>\n';
 
-      customDataString = '\n<script type="application/butter-custom-data">\n' +
-                         JSON.stringify( customData, null, 2 ) + '\n</script>\n';
       data = startString + baseString + templateScripts + externalAssetsString +
-             data.substring( headEndTagIndex, bodyEndTagIndex ) + customDataString +
+             data.substring( headEndTagIndex, bodyEndTagIndex ) +
              popcornString + data.substring( bodyEndTagIndex );
 
       function publishEmbedShell() {
@@ -263,7 +259,6 @@ app.post( '/api/publish/:id', filter.isLoggedIn, filter.isStorageAvailable, func
                     baseHref: baseHref,
                     templateScripts: templateScripts,
                     externalAssets: externalAssetsString,
-                    customData: customDataString,
                     // XXX: need a better way to wrap function, DOM needs to be ready
                     popcorn: popcornString.replace( /^\(function\(\)\{/m, "Popcorn( function(){" )
                                           .replace( /\}\(\)\);$/m, "});" )
@@ -282,12 +277,11 @@ app.get( '/dashboard', filter.isStorageAvailable, function( req, res ) {
     return;
   }
 
-  User.findAllProjects( email, function( err, doc ) {
+  User.findAllProjects( email, function( err, docs ) {
     var userProjects = [],
         project;
 
-    for ( var i = 0; doc && doc.projects && i < doc.projects.length; ++i ) {
-      project = doc.projects[ i ];
+    docs.forEach( function( project ) {
       if ( project.template && VALID_TEMPLATES[ project.template ] ) {
         userProjects.push({
           // make sure _id is a string. saw some strange double-quotes on output otherwise
@@ -298,7 +292,7 @@ app.get( '/dashboard', filter.isStorageAvailable, function( req, res ) {
             "?savedDataUrl=/api/project/" + project._id
         });
       }
-    }
+    });
 
     res.render( 'dashboard.jade', {
       user: {
