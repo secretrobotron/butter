@@ -15,6 +15,7 @@ define( [ "dialog/dialog" ], function( Dialog ){
 
   return function( butter ) {
 
+console.log('here');
     window.onerror = function( message, url, lineno ) {
       if( !window.XHLHttpRequest ) {
         return _onerror();
@@ -27,6 +28,8 @@ define( [ "dialog/dialog" ], function( Dialog ){
 
       return _onerror();
     };
+
+    window.foo = function(){ window.onerror(); };
 
   };
 

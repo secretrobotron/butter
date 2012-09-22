@@ -30,6 +30,7 @@
             "text!default-config.json",
             "text!layouts/ua-warning.html",
             "ui/widget/tooltip",
+            "crashreporter",
             "util/shims"                  // keep this at the end so it doesn't need a spot in the function signature
           ],
           function(
@@ -49,7 +50,8 @@
             Lang,
             DefaultConfigJSON,
             UA_WARNING_LAYOUT,
-            ToolTip
+            ToolTip,
+            CrashReporter
           ){
 
     var __guid = 0,
@@ -104,6 +106,9 @@
           _defaultPopcornScripts = {},
           _defaultPopcornCallbacks = {},
           _defaultTrackeventDuration;
+
+      // Spin-up the Crash Reporter
+      CrashReporter( null );
 
       // We use the default configuration in src/default-config.json as
       // a base, and override whatever the user provides in the
