@@ -15,15 +15,14 @@ define( [ "dialog/dialog" ], function( Dialog ){
 
   return function( butter ) {
 
-console.log('here');
     window.onerror = function( message, url, lineno ) {
-      if( !window.XHLHttpRequest ) {
+      if( !window.XMLHttpRequest ) {
         return _onerror();
       }
 
       console.log(message, url, lineno, navigator.userAgent);
 
-      var dialog = Dialog.span( "crash" );
+      var dialog = Dialog.spawn( "crash" );
       dialog.open();
 
       return _onerror();
