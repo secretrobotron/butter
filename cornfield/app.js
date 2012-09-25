@@ -319,17 +319,19 @@ app.get( '/dashboard', filter.isStorageAvailable, function( req, res ) {
 
 // Simple crash reporter
 app.post( '/report', function( req, res ) {
-  var report = "";
+  var report = '';
 
-  req.addListener( "data", function( data ) {
+  req.addListener( 'data', function( data ) {
     report += data;
   });
 
-  req.addListener( "end", function() {
-    // Make sure two reports don't have identical timestamp
-    var filename = "" + Date.now() + "-" + ( Math.random() + 1000 )|0 + ".txt";
-    fs.writeFile( path.join( REPORTS_DIR, filename ), report, function(){
+  req.addListener( 'end', function() {
+    // Make sure two reports don't have identical timestamp, add some noise
+    var noise = ( Math.random() * 1000 ) | 0,
+        filename = '' + Date.now() + '-' + noise + '.json';
+    fs.writeFile( path.join( REPORTS_DIR, filename ), report, function() {
       res.writeHead( 200, { 'content-type': 'text/plain' } );
+      res.end();
     });
   });
 });

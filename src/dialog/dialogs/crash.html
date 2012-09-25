@@ -6,21 +6,22 @@ obtain one at http://www.mozillapopcorn.org/butter-license.txt -->
   <div class="butter-logo"></div>
   <div class="butter-dialog-offset">
     <h2 class="butter-dialog-title">There was a problem
-      <p class="dialog-info">Popcorn ran into an unexpected issue and couldn't recover. We're sorry this had to happen to you, and have attempted to backup your project. Mozilla would like to know about this issue so we can fix it, and have prepared a report. Here's the details we'd like to send for analysis:</p>
+      <p class="dialog-info">Popcorn Maker ran into an unexpected issue and couldn't recover. We're sorry this had to happen to you, and have attempted to backup your project. Mozilla would like to know about this issue, and we've prepared a report to help fix it. Here are the anonymous details we'd like to send for analysis:</p>
       <div class="butter-form">
         <fieldset>
-        <textarea id="report" class="track-data main-textarea" readonly="true">Browser: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1&#10;&#10;URL: http://popcorn.webmaker.org/templates/basic/butter.js&#10;&#10;Error: SyntaxError: syntax error&#10;&#10;Line: 16</textarea>
-      </fieldset>
+          <textarea id="report" class="track-data main-textarea" readonly="true"></textarea>
+        </fieldset>
       </div>
     </h2>
   </div>
   <div class="butter-form">
     <fieldset>
-      <label><span class="ticket-icon"></span>If there is any extra information you'd like to send us about what happened, we'd be interested in that, too.</label>
+      <label><span class="ticket-icon"></span>If there is any extra information you'd like to send us about what happened, we'd be interested in that too.</label>
       <textarea id="comments" class="track-data main-textarea" placeholder="I was working and all of a sudden..."></textarea>
     </fieldset>
     <fieldset>
-      <button class="butter-btn btn-red butter-dialog-button update"></span>Send</button>
+      <button id="yes" class="butter-btn btn-green butter-dialog-button update">Yes, send anonymous report</button>
+      <button id="no" class="butter-btn btn-red butter-dialog-button update">No thanks, don't send</button>
     </fieldset>
   </div>
 </div>

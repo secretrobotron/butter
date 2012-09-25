@@ -7,10 +7,9 @@
  *
  * Provides backend and UI for the crash reporter
  */
-define( [ "dialog/dialog", "util/xhr" ], function( Dialog, XHR ){
+define( [ "dialog/dialog", "util/xhr" ], function( Dialog, XHR ) {
 
   return {
-
     init: function() {
       // Cache existing window.onerror
       var _onerror = window.onerror ? window.onerror : function(){ return true; };
@@ -37,11 +36,6 @@ define( [ "dialog/dialog", "util/xhr" ], function( Dialog, XHR ){
 
         return _onerror();
       };
-    },
-
-    // Send the crash report to Mozilla
-    send: function( report, callback ) {
-      XHR.post( "/report", JSON.stringify( report, null, 4 ), callback, "text/json" );
     }
   };
 });

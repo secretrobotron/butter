@@ -2,8 +2,8 @@
  *  * If a copy of the MIT license was not distributed with this file, you can
  *  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define([ "text!dialog/dialogs/crash.html", "dialog/dialog", "crashreporter" ],
-  function( LAYOUT_SRC, Dialog, CrashReporter ){
+define( [ "text!dialog/dialogs/crash.html", "dialog/dialog", "util/xhr" ],
+  function( LAYOUT_SRC, Dialog, XHR ) {
     function formatReport( report ) {
       return "URL: " + report.url + ":" + report.lineno + "\n" +
              "Error: " + report.message + "\n" +
@@ -16,17 +16,23 @@ define([ "text!dialog/dialogs/crash.html", "dialog/dialog", "crashreporter" ],
       var rootElement = dialog.rootElement,
           reportTextArea = rootElement.querySelector( "#report" ),
           commentsTextArea = rootElement.querySelector( "#comments" ),
-          sendBtn = rootElement.querySelector( ".update" );
+          noBtn = rootElement.querySelector( "#no" ),
+          yesBtn = rootElement.querySelector( "#yes" );
 
       reportTextArea.value = formatReport( data );
 
-      sendBtn.addEventListener( "click", function() {
+      function recover() {
+        // Once report is sent, force a reload of the page with
+        // recover=1 so we try to get user's backup data.
+        location.search = "?recover=" + Date.now();
+      }
+
+      noBtn.addEventListener( "click", recover, false );
+
+      yesBtn.addEventListener( "click", function() {
         data.comments = commentsTextArea.value || "";
-        CrashReporter.send( data, function() {
-          // Once report is sent, force a reload of the page with
-          // recover=1 so we try to get user's backup data.
-          location.search = "?recover=1";
-        });
+        XHR.post( "/report", JSON.stringify( data, null, 4 ),
+                  recover, "text/json" );
       }, false );
 
     });
