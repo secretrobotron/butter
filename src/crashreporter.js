@@ -12,13 +12,13 @@ define( [ "dialog/dialog" ], function( Dialog ){
   return {
 
     init: function() {
+      // Cache existing window.onerror
+      var _onerror = window.onerror ? window.onerror : function(){ return true; };
+
       window.onerror = function( message, url, lineno ) {
         if( !window.XMLHttpRequest ) {
           return _onerror();
         }
-
-        // Cache existing window.onerror
-        var _onerror = window.onerror ? window.onerror : function(){ return true; };
 
         // Be careful about trusting our objects if we've crashed.
         var popcornVersion = window.Popcorn ? window.Popcorn.version : "unknown",
