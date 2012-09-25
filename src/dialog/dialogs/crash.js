@@ -15,11 +15,13 @@ define([ "text!dialog/dialogs/crash.html", "dialog/dialog", "crashreporter" ],
 
       var rootElement = dialog.rootElement,
           reportTextArea = rootElement.querySelector( "#report" ),
+          commentsTextArea = rootElement.querySelector( "#comments" ),
           sendBtn = rootElement.querySelector( ".update" );
 
       reportTextArea.value = formatReport( data );
 
       sendBtn.addEventListener( "click", function() {
+        data.comments = commentsTextArea.value || "";
         CrashReporter.send( data, function() {
           // Once report is sent, force a reload of the page with
           // recover=1 so we try to get user's backup data.

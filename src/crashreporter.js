@@ -7,7 +7,7 @@
  *
  * Provides backend and UI for the crash reporter
  */
-define( [ "dialog/dialog" ], function( Dialog ){
+define( [ "dialog/dialog", "util/xhr" ], function( Dialog, XHR ){
 
   return {
 
@@ -41,8 +41,7 @@ define( [ "dialog/dialog" ], function( Dialog ){
 
     // Send the crash report to Mozilla
     send: function( report, callback ) {
-      //XXXhumph: need to post data to node. See crashReport obj above for format
-      callback();
+      XHR.post( "/report", JSON.stringify( report, null, 4 ), callback, "text/json" );
     }
   };
 });
