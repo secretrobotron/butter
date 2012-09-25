@@ -2,12 +2,30 @@
  *  * If a copy of the MIT license was not distributed with this file, you can
  *  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
-define([ "text!dialog/dialogs/crash.html", "dialog/dialog" ],
-  function( LAYOUT_SRC, Dialog ){
-    Dialog.register( "crash", LAYOUT_SRC, function ( dialog ) {
+define([ "text!dialog/dialogs/crash.html", "dialog/dialog", "crashreporter" ],
+  function( LAYOUT_SRC, Dialog, CrashReporter ){
+    function formatReport( report ) {
+      return "URL: " + report.url + ":" + report.lineno + "\n" +
+             "Error: " + report.message + "\n" +
+             "Browser: " + report.userAgent + "\n" +
+             "Versions: Popcorn=" + report.popcornVersion + ", Butter=" + report.butterVersion;
+    }
+
+    Dialog.register( "crash", LAYOUT_SRC, function ( dialog, data ) {
+
       var rootElement = dialog.rootElement,
-          updateBtn = rootElement.querySelector( ".update" ),
-          infoBtn = rootElement.querySelector( ".icon-info-sign" ),
-          dialogInfo = rootElement.querySelector( ".dialog-info" );
+          reportTextArea = rootElement.querySelector( "#report" ),
+          sendBtn = rootElement.querySelector( ".update" );
+
+      reportTextArea.value = formatReport( data );
+
+      sendBtn.addEventListener( "click", function() {
+        CrashReporter.send( report, function() {
+          // Once report is sent, force a reload of the page with
+          // recover=1 so we try to get user's backup data.
+          location.search = "?recover=1";
+        });
+      }, false );
+
     });
 });

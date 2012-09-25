@@ -108,7 +108,7 @@
           _defaultTrackeventDuration;
 
       // Spin-up the Crash Reporter
-      CrashReporter( null );
+      CrashReporter.init();
 
       // We use the default configuration in src/default-config.json as
       // a base, and override whatever the user provides in the

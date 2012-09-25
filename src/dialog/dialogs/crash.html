@@ -5,24 +5,22 @@ obtain one at http://www.mozillapopcorn.org/butter-license.txt -->
 <div class="butter-dialog butter-feedback-form">
   <div class="butter-logo"></div>
   <div class="butter-dialog-offset">
-    <h2 class="butter-dialog-title">Crash<span class="icon icon-info-sign"></span>
-      <p class="dialog-info">It looks like we've run into a problem and couldn't recover. We're sorry this had to happen to you. It looks like we managed to get some info about what went wrong and will send it back to Mozilla for analysis. Here is what we'll send:</p>
-      <fieldset>
-        <label><span class="something">Browser:</span> <span class="something-else">Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1</span></label>
-        <label><span class="something">URL:</span> <span class="something-else">http://pr986.butyr.org/templates/basic/foo.js</span></label>
-        <label><span class="something">Error:</span> <span class="something-else">SyntaxError: syntax error</span></label>
-        <label><span class="something">Line:</span> <span class="something-else">16</span></label>
+    <h2 class="butter-dialog-title">There was a problem
+      <p class="dialog-info">Popcorn ran into an unexpected issue and couldn't recover. We're sorry this had to happen to you, and have attempted to backup your project. Mozilla would like to know about this issue so we can fix it, and have prepared a report. Here's the details we'd like to send for analysis:</p>
+      <div class="butter-form">
+        <fieldset>
+        <textarea id="report" class="track-data main-textarea" readonly="true">Browser: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:15.0) Gecko/20100101 Firefox/15.0.1&#10;&#10;URL: http://popcorn.webmaker.org/templates/basic/butter.js&#10;&#10;Error: SyntaxError: syntax error&#10;&#10;Line: 16</textarea>
       </fieldset>
+      </div>
     </h2>
   </div>
-  <div class="butter-editor-styles">
+  <div class="butter-form">
     <fieldset>
-      <label><span class="ticket-icon"></span>If there is any extra information you'd like to send us about what happened, we'd be interested in that too.</label>
-      <textarea class="track-data main-textarea">I was working and all of a sudden...</textarea>
+      <label><span class="ticket-icon"></span>If there is any extra information you'd like to send us about what happened, we'd be interested in that, too.</label>
+      <textarea class="track-data main-textarea" placeholder="I was working and all of a sudden..."></textarea>
     </fieldset>
     <fieldset>
-      <button class="butter-btn btn-red butter-dialog-button update"></span>Send Report</button>
+      <button class="butter-btn btn-red butter-dialog-button update"></span>Send</button>
     </fieldset>
   </div>
-  <p>You can try refreshing the page to fix the problem.</p>
 </div>

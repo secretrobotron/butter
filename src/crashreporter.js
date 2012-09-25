@@ -9,29 +9,40 @@
  */
 define( [ "dialog/dialog" ], function( Dialog ){
 
-  // Cache existing window.onerror
-  var _onerror = window.onerror ? window.onerror : function(){ return true; },
-      _butter;
+  return {
 
-  return function( butter ) {
+    init: function() {
+      window.onerror = function( message, url, lineno ) {
+        if( !window.XMLHttpRequest ) {
+          return _onerror();
+        }
 
-    window.onerror = function( message, url, lineno ) {
-      if( !window.XMLHttpRequest ) {
+        // Cache existing window.onerror
+        var _onerror = window.onerror ? window.onerror : function(){ return true; };
+
+        // Be careful about trusting our objects if we've crashed.
+        var popcornVersion = window.Popcorn ? window.Popcorn.version : "unknown",
+            butterVersion = window.Butter ? window.Butter.version : "unknown",
+            crashReport = {
+              message: message,
+              url: url,
+              lineno: lineno,
+              userAgent: navigator.userAgent,
+              popcornVersion: popcornVersion,
+              butterVersion: butterVersion
+            };
+
+        var dialog = Dialog.spawn( "crash", { data: crashReport } );
+        dialog.open();
+
         return _onerror();
-      }
+      };
+    },
 
-      // Be careful about trusting our objects if we've crashed.
-      var popcornVersion = window.Popcorn ? window.Popcorn.version : "unknown",
-          butterVersion = window.Butter ? window.Butter.version : "unknown";
-
-      console.log( message, url, lineno, navigator.userAgent, popcornVersion, butterVersion );
-
-      var dialog = Dialog.spawn( "crash" );
-      dialog.open();
-
-      return _onerror();
-    };
-
+    // Send the crash report to Mozilla
+    send: function( report, callback ) {
+      //XXXhumph: need to post data to node. See crashReport obj above for format
+      callback();
+    }
   };
-
 });
