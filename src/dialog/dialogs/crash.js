@@ -20,7 +20,7 @@ define([ "text!dialog/dialogs/crash.html", "dialog/dialog", "crashreporter" ],
       reportTextArea.value = formatReport( data );
 
       sendBtn.addEventListener( "click", function() {
-        CrashReporter.send( report, function() {
+        CrashReporter.send( data, function() {
           // Once report is sent, force a reload of the page with
           // recover=1 so we try to get user's backup data.
           location.search = "?recover=1";

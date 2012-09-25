@@ -3,10 +3,10 @@
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
 define( [ "core/eventmanager", "./toggler",
-          "./header", "./unload-dialog",
+          "./header", "./unload-dialog", "crashreporter",
           "./tray", "../editor/media-editor", "editor/ui-kit" ],
   function( EventManagerWrapper, Toggler,
-            Header, UnloadDialog,
+            Header, UnloadDialog, CrashReporter,
             Tray, MediaEditor ){
 
   var TRANSITION_DURATION = 500,
@@ -107,6 +107,9 @@ define( [ "core/eventmanager", "./toggler",
           // icon preloading needs css to be loaded first
 
           _this.loadIcons( _uiConfig.value( "plugin" ).plugins );
+
+          // Spin-up the crash reporter
+          CrashReporter.init();
 
           onReady();
         });
