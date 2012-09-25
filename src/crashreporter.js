@@ -20,15 +20,17 @@ define( [ "dialog/dialog" ], function( Dialog ){
         return _onerror();
       }
 
-      console.log(message, url, lineno, navigator.userAgent);
+      // Be careful about trusting our objects if we've crashed.
+      var popcornVersion = window.Popcorn ? window.Popcorn.version : "unknown",
+          butterVersion = window.Butter ? window.Butter.version : "unknown";
+
+      console.log( message, url, lineno, navigator.userAgent, popcornVersion, butterVersion );
 
       var dialog = Dialog.spawn( "crash" );
       dialog.open();
 
       return _onerror();
     };
-
-    window.foo = function(){ window.onerror(); };
 
   };
 
