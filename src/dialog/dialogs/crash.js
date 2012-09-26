@@ -21,9 +21,11 @@ define( [ "text!dialog/dialogs/crash.html", "dialog/dialog", "util/xhr" ],
 
       reportTextArea.value = formatReport( data );
 
+      // Once report is sent, force a reload of the page with
+      // recover=1 so we try to get user's backup data.
       function recover() {
-        // Once report is sent, force a reload of the page with
-        // recover=1 so we try to get user's backup data.
+        // Remove the "Are you sure?" navigation check, since we have to reload
+        window.onbeforeunload = null;
         location.search = "?recover=" + Date.now();
       }
 
