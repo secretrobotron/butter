@@ -33,6 +33,8 @@ define( [ "core/eventmanager", "./toggler",
         _uiOptions = _uiConfig.value( "ui" ),
         _this = this;
 
+    butter.testCrash = CrashReporter.test;
+
     EventManagerWrapper( _this );
 
     this.contentStateLocked = false;

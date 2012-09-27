@@ -45,8 +45,25 @@ define( [ "dialog/dialog", "util/xhr", "util/uri" ], function( Dialog, XHR, URI 
               lineno: lineno,
               userAgent: navigator.userAgent,
               popcornVersion: popcornVersion,
-              butterVersion: butterVersion
+              butterVersion: butterVersion,
+              onSendReport: sendErrorReport,
+              onNoReport: attemptRecovery
             };
+
+        // Once report is sent, force a reload of the page with
+        // recover=1 so we try to get user's backup data.
+        function attemptRecovery() {
+          // Remove the "Are you sure?" navigation check, since we have to reload
+          window.onbeforeunload = null;
+          location.search = "?recover=" + Date.now();
+        }
+
+        function sendErrorReport( comments ) {
+          delete crashReport.onSendReport;
+          delete crashReport.onNoReport;
+          crashReport.comments = comments;
+          XHR.post( "/report", JSON.stringify( crashReport, null, 4 ), attemptRecovery, "text/json" );
+        }
 
         if( Dialog && Dialog.spawn ) {
           _dialog = Dialog.spawn( "crash", { data: crashReport } );
@@ -55,6 +72,11 @@ define( [ "dialog/dialog", "util/xhr", "util/uri" ], function( Dialog, XHR, URI 
 
         return _onerror();
       };
+    },
+    test: function() {
+      setTimeout(function() {
+        throw "Test";
+      }, 1);
     }
   };
 });

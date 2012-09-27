@@ -71,7 +71,7 @@ define( [ "dialog/dialog", "util/lang", "text!layouts/header.html" ],
      * @param {function} errorCallback: A callback function that is fired when the user attempts to save with no project name
      */
     this.save = function( successCallback, errorCallback ) {
-!a;
+
       function execute(){
         var saveString;
 
