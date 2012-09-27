@@ -66,8 +66,13 @@ define( [ "dialog/dialog", "util/xhr", "util/uri" ], function( Dialog, XHR, URI 
         }
 
         if( Dialog && Dialog.spawn ) {
-          _dialog = Dialog.spawn( "crash", { data: crashReport } );
-          _dialog.open();
+          try {
+            _dialog = Dialog.spawn( "crash", { data: crashReport } );
+            _dialog.open();
+          }
+          catch( e ) {
+            attemptRecovery();
+          }
         }
 
         return _onerror();
