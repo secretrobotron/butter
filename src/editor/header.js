@@ -10,13 +10,15 @@ define([ "ui/widget/tooltip",
     var _mediaButton = editorAreaDOMRoot.querySelector( ".butter-editor-header-media" ),
         _popcornButton = editorAreaDOMRoot.querySelector( ".butter-editor-header-popcorn" ),
         _shareButton = editorAreaDOMRoot.querySelector( ".butter-editor-header-share" ),
+        _collaborateButton = editorAreaDOMRoot.querySelector( ".butter-editor-header-collaborate" ),
         _loginToShareTooltip,
         _waitForMediaTooltip;
 
     var _focusMap = {
       "media-editor": _mediaButton,
       "plugin-list": _popcornButton,
-      "share-properties": _shareButton
+      "share-properties": _shareButton,
+      "collaboration-editor": _collaborateButton
     };
 
     var _currentFocus;
@@ -42,6 +44,10 @@ define([ "ui/widget/tooltip",
     _mediaButton.addEventListener( "click", function( e ) {
       editorModule.openEditor( "media-editor" );
     }, false );
+
+    _collaborateButton.addEventListener('click', function(e){
+      editorModule.openEditor('collaboration-editor');
+    }, false);
 
     function openPluginList() {
       editorModule.openEditor( "plugin-list" );

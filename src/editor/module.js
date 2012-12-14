@@ -10,7 +10,7 @@
 define( [ "core/eventmanager", "core/trackevent", "./editor",
           "ui/toggler", "util/lang", "text!layouts/editor-area.html",
           "./default", "core/logger", "./header",
-          "./media-editor", "./share-editor" ],
+          "./media-editor", "./share-editor", "./collaboration-editor" ],
   function( EventManager, TrackEvent, Editor,
             Toggler, LangUtils, EDITOR_AREA_LAYOUT,
             DefaultEditor, Logger, Header,

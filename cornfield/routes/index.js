@@ -1,12 +1,32 @@
 'use strict';
 
 var datauri = require('../lib/datauri');
+var socket = require('socket.io');
+
+var PORT_BASE = 10000;
 
 module.exports = function routesCtor( app, User, filter, sanitizer, stores, utils ) {
 
   var uuid = require( "node-uuid" ),
       // Keep track of whether this is production or development
       deploymentType = app.settings.env === "production" ? "production" : "development";
+
+  var io = socket.listen(PORT_BASE);
+  var sockets = {};
+
+  io.sockets.on('connection', function(socket){
+    console.log('yay!');
+  });
+
+  app.get('/api/invite/:id?', function(req, res){
+    var socketId = uuid.v4();
+    sockets[socketId] = {};
+    res.json({error: 'okay', session: socketId}, 200);
+  });
+
+  app.get('api/invite/join/:id?', function(req, res){
+    
+  });
 
   app.get( '/api/whoami', function( req, res ) {
     var email = req.session.email;

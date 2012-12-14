@@ -25,11 +25,16 @@
     padding: 0;
     width: 100%;
     list-style: none;
+    white-space: nowrap;
 
     > .butter-editor-header-li {
-      float: left;
       position: relative;
       top: 0;
+      display: inline-block;
+
+      a {
+        padding: 0 8px;
+      }
     }
   }
 } // .butter-editor-header
@@ -38,8 +43,8 @@
   background: none;
   border: none;
   color: #FFF;
-  font-size: 14px;
-  padding: 0 10px;
+  font-size: 13px;
+  //padding: 0 10px;
   border-radius: 0;
   height: @_editorHeaderHeight;
   line-height: @_editorHeaderHeight;

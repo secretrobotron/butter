@@ -2,7 +2,7 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
-define([ "util/xhr", "jsSHA/sha1", "util/shims" ],
+define([ "util/xhr", "jsSHA/sha1", "util/shims", 'socketio/socket.io' ],
   function( XHR, SHA1 ) {
 
   // Shortcut to make lint happy. Constructor is capitalized, and reference is non-global.
@@ -152,6 +152,30 @@ define([ "util/xhr", "jsSHA/sha1", "util/shims" ],
         }
       });
     }
+
+    this.getInvitation = function(id, callback){
+      XHR.get(server + "/api/invite/" + id, function() {
+        if (this.readyState === 4) {
+          var response;
+
+          // Reset publish function to its original incarnation.
+          self.publish = publishFunction;
+
+          try {
+            response = JSON.parse( this.response || this.responseText );
+
+            var socket = io.connect('http://localhost:10000');
+            socket.on('get project data', function(data){
+              socket.emit('send project data', butter.project.json);
+            });
+
+            callback(response);
+          } catch (err) {
+            callback({ error: "an unknown error occured" });
+          }
+        }
+      });      
+    };
 
     this.logout = function(callback) {
       sendXHRPost(server + "/persona/logout", null, function() {

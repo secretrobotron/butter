@@ -12,7 +12,8 @@ define(function( require, exports, module ){
     paths: {
       'text': '../external/require/text',
       'jsSHA': '../external/jsSHA',
-      'UAParser': '../external/ua-parser'
+      'UAParser': '../external/ua-parser',
+      'socketio': '../external/socket.io'
     }
   });
 
