@@ -10,7 +10,8 @@
   paths: {
     'text': '../external/require/text',
     'jsSHA': '../external/jsSHA',
-    'UAParser': '../external/ua-parser'
+    'UAParser': '../external/ua-parser',
+    'socketio': '../external/socket.io'
   },
 
   // Use has branch trimming in the build to remove the document.write
