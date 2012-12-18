@@ -5,10 +5,29 @@
   <div class="butter-editor-body scrollbar-container">
     <div class="scrollbar-outer">
       <div class="scrollbar-inner">
-        <fieldset>
+        <fieldset class="update-requests">
+          <p>Collaborator updates:</p>
+          <ul>
+          </ul>
+          <button>Dismiss</button>
+        </fieldset>
+        <fieldset class="send-invitation">
           <p>Send an invitation to a friend to start collaborating!</p>
-          <input class="invitation-email" type="text" placeholder="bleep@bloop.com" />
+          <input class="invitation-email" type="text" placeholder="bleep@bloop.com" value="secretrobotron@gmail.com" />
           <a class="invitation-button butter-btn btn-light">Send Invitation</a>
+        </fieldset>
+        <fieldset class="invitation-response">
+          <p>Send this invitation url to <span class="user"></span> to start collaborating!</p>
+          <a class="invitation-url"></a>
+        </fieldset>
+        <fieldset class="session-info">
+          <p>Owner: <span class="owner"></span></p>
+          <p>Collaborators:</p>
+          <ul class="collaborators"></ul>
+        </fieldset>
+        <fieldset>
+          <div class="chat-output"></div>
+          <input class="chat-input" type="text" placeholder="Type here to chat.">
         </fieldset>
       </div>
     </div>

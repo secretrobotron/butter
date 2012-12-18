@@ -12,20 +12,144 @@ module.exports = function routesCtor( app, User, filter, sanitizer, stores, util
       deploymentType = app.settings.env === "production" ? "production" : "development";
 
   var io = socket.listen(PORT_BASE);
-  var sockets = {};
+  var collaborationSessions = {};
 
   io.sockets.on('connection', function(socket){
-    console.log('yay!');
+    var sessionId = this.manager._id;
+    var session = collaborationSessions[sessionId];
+
+    socket._id = sessionId;
+    socket._profile = this.manager._profile;
+
+    session.sockets[session.sockets.indexOf(this.manager)] = socket;
+
+    socket.on('send project data', function(data){
+      console.log('project data received', arguments);
+      session.forOtherSockets(socket, function(otherSocket){
+        data.owner = session.owner;
+        otherSocket.emit('send project data', data);
+      });
+    });
+
+    [ 'trackeventupdated', 'trackeventadded', 'trackeventremoved',
+      'trackadded', 'trackremoved' ]
+      .forEach(function(event){
+      console.log('attaching repeat events');
+      socket.on(event, function(data){
+        console.log('repeating', event, data);
+        session.sendToOtherSockets(socket, event, data);
+      });
+    });
+
+    socket.on('get project data', function(){
+      session.sendToOwner('get project data');
+    });
+
+    socket.on('chat', function(data){
+      session.broadcast('chat', {
+        user: socket._profile,
+        data: data
+      });
+    });
+
+    socket.on('disconnect', function(){
+      session.forOtherSockets(socket, function(otherSocket){
+        otherSocket.emit('left', socket._profile);
+      });
+    });
+
+    session.forOtherSockets(socket, function(otherSocket){
+      otherSocket.emit('joined', socket._profile);
+    });
+
+    socket.on('trackeventupdaterequest', function(data){
+      session.sendToOwner('trackeventupdaterequest', data);
+    });
   });
 
-  app.get('/api/invite/:id?', function(req, res){
-    var socketId = uuid.v4();
-    sockets[socketId] = {};
-    res.json({error: 'okay', session: socketId}, 200);
+  io.set('authorization', function(data, accept){
+    var sessionId = data.query.id;
+
+    var verifyId = data.query.verify;
+    var user = data.query.user;
+    var session = collaborationSessions[sessionId];
+
+    if(sessionId && session){
+      console.log(session, session.verifications, session.verifications[verifyId]);
+
+      if(verifyId && !session.verifications[verifyId]){
+        accept('nope', false);
+        return;
+      }
+
+      if(session.sockets.length === 0){
+        this._profile = {
+          email: session.owner
+        }
+      }
+      else {
+        this._profile = {
+          email: session.verifications[verifyId]
+        };
+      }
+
+      console.log(this._profile);
+
+      session.sockets.push(this);
+      this._id = sessionId;
+      accept(null, true);
+    }
   });
 
-  app.get('api/invite/join/:id?', function(req, res){
-    
+  app.get('/api/join/:id?', function(req, res){
+    var sessionId = req.params.id;
+    var user = req.session.email;
+    var verifyId = uuid.v4();
+
+    if(collaborationSessions[sessionId] && collaborationSessions[sessionId].users.indexOf(user) > -1){
+      collaborationSessions[sessionId].verifications[verifyId] = user;
+      res.json({error: 'okay', verify: verifyId}, 200);
+    }
+    res.json({error: 'nope'}, 500);
+  });
+
+  app.get('/api/invite/:id?/:inviteEmail?', function(req, res){
+    var sessionId = uuid.v4();
+    var session = collaborationSessions[sessionId] = collaborationSessions[sessionId] || {
+      sendToOwner: function(event, data){
+        session.sockets[0].emit(event, data);
+      },
+      forOtherSockets: function(socket, fn){
+        session.sockets.forEach(function(otherSocket){
+          if(otherSocket !== socket){
+            fn(otherSocket);
+          }
+        });
+      },
+      sendToOtherSockets: function(socket, event, data){
+        session.forOtherSockets(socket, function(otherSocket){
+          otherSocket.emit(event, data);
+        });
+      },
+      broadcast: function(event, data){
+        session.sockets.forEach(function(otherSocket){
+          otherSocket.emit(event, data);
+        });
+      },
+      get owner(){
+        return session.users[0]
+      },
+      sockets: [],
+      verifications: {},
+      projectId: req.params.id,
+      users: [
+        req.session.email,
+      ],
+    };
+
+    collaborationSessions[sessionId].users.push(req.params.inviteEmail);
+
+    res.json({error: 'okay', session: sessionId, user: req.session.email}, 200);
   });
 
   app.get( '/api/whoami', function( req, res ) {

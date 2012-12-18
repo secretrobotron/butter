@@ -2,11 +2,10 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
-define( [ "./eventmanager", "./trackevent", "./views/track-view" ],
-        function( EventManager, TrackEvent, TrackView ){
+define( [ "util/uuid", "./eventmanager", "./trackevent", "./views/track-view" ],
+        function( UUID, EventManager, TrackEvent, TrackView ){
 
-  var __guid = 0,
-      NAME_PREFIX = "Layer ",
+  var NAME_PREFIX = "Layer ",
       Track;
 
   Track = function( options ) {
@@ -14,12 +13,14 @@ define( [ "./eventmanager", "./trackevent", "./views/track-view" ],
 
     var _trackEvents = [],
         _target = options.target,
-        _id = "" + __guid++,
+        _id = options.id || UUID.v4(),
         _view = new TrackView( _id, this ),
         _popcornWrapper = null,
         _this = this,
         _order = 0,
         _name = NAME_PREFIX + _order;
+
+    console.log('track', options.id, _id);
 
     _this._media = null;
 
@@ -107,6 +108,9 @@ define( [ "./eventmanager", "./trackevent", "./views/track-view" ],
         set: function( importData ){
           if( importData.name ){
             _name = importData.name;
+          }
+          if(importData.id){
+            _id = importData.id;
           }
           if( importData.trackEvents ){
             var importTrackEvents = importData.trackEvents;

@@ -254,6 +254,15 @@
         }
       };
 
+      this.getTrackEventById = function(id){
+        for( var i=0, l=_tracks.length; i<l; ++i ){
+          var te = _tracks[ i ].getTrackEventById( id );
+          if( te ){
+            return te;
+          }
+        }
+      };
+
       this.findTrackWithTrackEventId = function( id ){
         for( var i=0, l=_tracks.length; i<l; ++i ){
           var te = _tracks[ i ].getTrackEventById( id );

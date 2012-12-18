@@ -103,7 +103,7 @@
   height: @_trackEventHeight;
   padding: 1px 0;
   position: absolute;
-  overflow: hidden;
+  //overflow: hidden;
 
   &[selected="true"] {
     border-color: @green;
@@ -115,6 +115,46 @@
     width: 100%;
     overflow: hidden;
     height: 100%;
+  }
+
+  &.update-notification {
+    box-shadow: rgba(0, 0, 0, 0.0980392) 1px 5px 2px -3px, inset #FF5721 0px 0px 0px 2px
+  }
+
+  &.fake {
+    opacity: 0.8;
+    .transition( all 0.2s ease 0.2s );
+  }
+
+  &.fake-on {
+    opacity: 0.2;
+  }
+
+  .update-requests {
+    height: 12px;
+    background: #FF5721;
+    width: 100px;
+    color: #fff;
+    font-size: 9px;
+    line-height: 12px;
+    position: absolute;
+    bottom: -12px;
+    left: 0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    visibility: hidden;
+    margin-left: 10px;
+    padding-left: 12px;
+    cursor: pointer;
+    z-index: 999999;
+
+    .counter {
+      font-weight: bold;
+    }
+
+    &.on {
+      visibility: visible;
+    }
   }
 
   .title {

@@ -12,6 +12,7 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
   return function( trackEvent, type, inputOptions ){
 
     var _element = LangUtils.domFragment( TRACKEVENT_LAYOUT, ".butter-track-event" ),
+        _updateRequestContainer = _element.querySelector('.update-requests'),
         _type = type,
         _icon = document.getElementById( _type + "-icon" ),
         _start = inputOptions.start || 0,
@@ -29,6 +30,8 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
         _ghost,
         _onDrag,
         _onResize,
+        _fake,
+        _updateNotifications = [],
         _this = this;
 
     EventManager.extend( _this );
@@ -113,7 +116,59 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
       _onResize = resizeHandler;
     };
 
+    this.addUpdateRequestNotification = function(user, options){
+      _updateRequestContainer.classList.add('on');
+      _updateNotifications.push({user: user, options: options});
+      _updateRequestContainer.querySelector('.counter').innerHTML = _updateNotifications.length;
+      _element.classList.add('update-notification');
+    };
+
+    this.fake = function(options){
+      options = options || {}
+      _this.clearFakes();
+      var fake = _fake = _element.cloneNode(true);
+      _fake.classList.add('fake');
+      _fake.removeChild(_fake.querySelector('.update-requests'));
+      _parent.element.appendChild(_fake);
+
+      var start = options.start || _start;
+      var end = options.end || _end;
+
+      setTimeout(function(){
+        fake.style.left = start  / _trackEvent.track._media.duration * 100 + "%"; 
+        fake.style.width = ( end - start ) / _trackEvent.track._media.duration * 100 + "%";
+      }, 100);
+
+      _element.classList.add('fake-on');
+    };
+
+    this.clearFakes = function(){
+      if(_fake){
+        _fake.parentNode.removeChild(_fake);
+      }
+      _element.classList.remove('fake-on');
+      _fake = null;
+    };
+
+    this.clearRequests = function(){
+      _updateNotifications = [];
+      _element.classList.remove('update-notification');
+      _updateRequestContainer.classList.remove('on');
+    };
+
+    _updateRequestContainer.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      _this.dispatch('updaterequesttabclicked');
+    }, false);
+
     Object.defineProperties( this, {
+      updateRequests: {
+        enumerable: true,
+        get: function(){
+          return _updateNotifications;
+        }
+      },
       trackEvent: {
         enumerable: true,
         get: function(){

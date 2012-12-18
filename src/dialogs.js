@@ -9,5 +9,6 @@ define([
   "dialog/dialogs/feedback",
   "dialog/dialogs/crash",
   "dialog/dialogs/first-run",
-  "dialog/dialogs/backup"
+  "dialog/dialogs/backup",
+  "dialog/dialogs/join-session"
 ], function() {} );

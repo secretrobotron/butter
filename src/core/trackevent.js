@@ -7,9 +7,11 @@
  *
  * Supports a single event in the Media > Track > TrackEvent model.
  */
-define( [ "./logger", "./eventmanager", "./observer",
+define( [ "util/uuid",
+          "./logger", "./eventmanager", "./observer",
           "util/lang", "util/time", "./views/trackevent-view" ],
-  function( Logger, EventManager, Observer,
+  function( UUID,
+            Logger, EventManager, Observer,
             LangUtil, TimeUtil, TrackEventView ) {
 
   var __guid = 0;
@@ -42,7 +44,7 @@ define( [ "./logger", "./eventmanager", "./observer",
     options = options || {};
 
     var _this = this,
-        _id = "TrackEvent" + __guid++,
+        _id = options.id || UUID.v4(),
         _name = options.name || _id,
         _logger = new Logger( _id ),
         _track = null,
@@ -54,6 +56,8 @@ define( [ "./logger", "./eventmanager", "./observer",
         _view = new TrackEventView( this, _type, _popcornOptions ),
         _popcornWrapper = null,
         _selected = false;
+
+    console.log('trackevent', options.id, _id);
 
     EventManager.extend( _this );
     Observer.extend( _this );
@@ -79,7 +83,6 @@ define( [ "./logger", "./eventmanager", "./observer",
     _popcornOptions.start = TimeUtil.roundTime( _popcornOptions.start );
     _popcornOptions.end = _popcornOptions.end || _popcornOptions.start + 1;
     _popcornOptions.end = TimeUtil.roundTime( _popcornOptions.end );
-
 
     /**
      * Member: bind
@@ -364,6 +367,9 @@ define( [ "./logger", "./eventmanager", "./observer",
           this.manifest = Popcorn.manifest[ _type ];
           if ( importData.name ){
             _name = importData.name;
+          }
+          if(importData.id){
+            _id = importData.id;
           }
           _popcornOptions = importData.popcornOptions;
           _this.popcornOptions = _popcornOptions;

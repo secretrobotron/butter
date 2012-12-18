@@ -30,7 +30,9 @@ define( [ "core/eventmanager", "core/media", "util/shims" ],
         _backupIntervalMS = butter.config.value( "backupInterval" )|0,
 
         // Interval for backups, starts first time user clicks Save.
-        _backupInterval = -1;
+        _backupInterval = -1,
+
+        _collaboration;
 
     function invalidate() {
       // Project is dirty, needs save, backup
@@ -143,8 +145,14 @@ define( [ "core/eventmanager", "core/media", "util/shims" ],
           return _isPublished && !_isDirty;
         },
         enumerable: true
-      }
+      },
 
+      collaboration: {
+        enumerable: true,
+        get: function(){
+          return _collaboration;
+        }
+      }
     });
 
     EventManager.extend( _this );
@@ -352,6 +360,12 @@ define( [ "core/eventmanager", "core/media", "util/shims" ],
           callback( e );
         }
       });
+    };
+
+    this.importCollaboration = function(data){
+      _this.import(data);
+      _collaboration = data.owner;
+      delete data.owner;
     };
   }
 

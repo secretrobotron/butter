@@ -226,6 +226,40 @@
     top: @_editorTitle;
     bottom: 0;
     width: 100%;
+
+    .chat-output {
+      height: 200px;
+      width: 273px;
+      background: white;
+      border: 1px solid #CCC;
+      border-radius: 3px;
+      margin-bottom: 5px;
+      padding: 10px;
+      overflow-y: scroll;
+    }
+
+    .update-requests {
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+          margin: 3px;
+          padding: 2px;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: pointer;
+
+          &:hover {
+            background: #eee;
+          }
+        }
+      }
+
+    }
   }
 
   .butter-editor-body.butter-tabs-spacing {
