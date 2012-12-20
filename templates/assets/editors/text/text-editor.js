@@ -33,6 +33,11 @@
 
       var basicContainer = _rootElement.querySelector( ".editor-options" ),
           advancedContainer = _rootElement.querySelector( ".advanced-options" ),
+          scriptsContainer = _rootElement.querySelector( ".scripts" ),
+          basicButton = _rootElement.querySelector('.butter-btn.basic-tab'),
+          advancedButton = _rootElement.querySelector('.butter-btn.advanced-tab'),
+          scriptsButton = _rootElement.querySelector('.butter-btn.scripts-tab'),
+          wrapper = _rootElement.querySelector( ".scrollbar-outer" ),
           pluginOptions = {},
           pickers = {};
 
@@ -131,13 +136,24 @@
         _popcornOptions.position = "middle";
       }
 
+      _this.addTab('basic', basicContainer, basicButton);
+      _this.addTab('advanced', advancedContainer, advancedButton);
+      _this.addTab('scripts', scriptsContainer, scriptsButton);
+
       _this.createPropertiesFromManifest({
         trackEvent: trackEvent,
         callback: callback,
-        basicContainer: basicContainer,
-        advancedContainer: advancedContainer,
-        ignoreManifestKeys: [ "start", "end" ]
+        ignoreManifestKeys: [ "start", "end", "scripts" ]
       });
+
+      // Override default scrollbar to account for both tab containers
+      _this.addScrollbar({
+        inner: wrapper,
+        outer: wrapper,
+        appendTo: _rootElement.querySelector( ".scrollbar-container" )
+      });
+
+      _this.createScriptEditors(trackEvent, scriptsContainer);
 
       attachHandlers();
       _this.updatePropertiesFromManifest( trackEvent );
@@ -178,5 +194,6 @@
         _trackEvent.unlisten( "trackeventupdated", onTrackEventUpdated );
       }
     });
+
   });
 }( window.Butter ));

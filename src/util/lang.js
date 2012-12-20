@@ -6,9 +6,9 @@ define( [ "./shims" ], function(){
 
   var DEFAULT_TRANSITION_TIMEOUT = 15;
 
-  var TRANSFORM_PROPERTY = (function(){
+  function getBrowserPrefixedProperty(suffix){
     var div = document.createElement( "div" );
-    var choices = "Webkit Moz O ms".split( " " ).map( function( prefix ) { return prefix + "Transform"; } );
+    var choices = "Webkit Moz O ms".split( " " ).map( function( prefix ) { return prefix + suffix[0].toUpperCase() + suffix.substr(1); } );
 
     for ( var i = choices.length; i >= 0; --i ) {
       if ( div.style[ choices[ i ] ] !== undefined ) {
@@ -16,8 +16,13 @@ define( [ "./shims" ], function(){
       }
     }
 
-    return "transform";
-  }());
+    return suffix;
+  }
+
+  var __prefixedProperties = {
+    transform: getBrowserPrefixedProperty("transform"),
+    transition: getBrowserPrefixedProperty("transition")
+  };
 
   /**
    * HTML escape code from mustache.js, used under MIT Licence
@@ -172,7 +177,19 @@ define( [ "./shims" ], function(){
     },
 
     setTransformProperty: function( element, transform ) {
-      element.style[ TRANSFORM_PROPERTY ] = transform;
+      element.style[ getBrowserPrefixedProperty('transform') ] = transform;
+    },
+
+    setTransitionProperty: function( element, transition ) {
+      element.style[ getBrowserPrefixedProperty('transition') ] = transition;
+    },
+
+    getBrowserPrefixedProperty: function(suffix){
+      if(!__prefixedProperties[suffix]){
+        var property = getBrowserPrefixedProperty(suffix);
+        __prefixedProperties[suffix] = property;
+      }
+      return __prefixedProperties[suffix];
     },
 
     getTransformProperty: function( element ) {

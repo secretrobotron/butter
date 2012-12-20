@@ -10,10 +10,13 @@
 define( [ "core/eventmanager", "core/trackevent", "./editor",
           "ui/toggler", "util/lang", "text!layouts/editor-area.html",
           "./default", "core/logger", "./header",
+          "text!codemirror/lib/codemirror.css", "text!codemirror/theme/ambiance.css", "codemirror/lib/codemirror",
           "./media-editor", "./share-editor" ],
   function( EventManager, TrackEvent, Editor,
             Toggler, LangUtils, EDITOR_AREA_LAYOUT,
             DefaultEditor, Logger, Header,
+
+            CodeMirrorCSS, CodeMirrorThemeCSS, CodeMirror,
 
             //included here to register themselves
             MediaEditor, ShareEditor ){
@@ -221,6 +224,10 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
         // Start minimized
         _editorAreaDOMRoot.classList.add( "minimized" );
         document.body.classList.remove( "editor-open" );
+
+        var codeMirrorCSSTag = document.createElement('style');
+        codeMirrorCSSTag.innerHTML = CodeMirrorCSS + '\n\n' + CodeMirrorThemeCSS;
+        document.head.appendChild(codeMirrorCSSTag);
 
         butter.ui.setEditor( _editorAreaDOMRoot );
 

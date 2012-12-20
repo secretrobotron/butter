@@ -57,7 +57,8 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
     var _oldOpenEvent = events.open,
         _trackEventUpdateErrorCallback = NULL_FUNCTION,
         _errorMessageContainer,
-        _trackEvent;
+        _trackEvent,
+        _tabs = {};
 
     events.open = function( parentElement, trackEvent ) {
       var basicButton = rootElement.querySelector( ".basic-tab" ),
@@ -75,6 +76,7 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
       if ( _oldOpenEvent ) {
         _oldOpenEvent.apply( this, arguments );
       }
+
       // Code for handling basic/advanced options tabs are going to be the same. If the user defined these buttons
       // handle it for them here rather than force them to write the code in their editor
       if ( basicButton && advancedButton ) {
@@ -117,6 +119,80 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
     BaseEditor.extend( extendObject, butter, rootElement, events );
 
     extendObject.defaultLayouts = __defaultLayouts.cloneNode( true );
+
+    extendObject.createScriptEditors = function(trackEvent, editorContainer){
+      var scripts = trackEvent.popcornTrackEvent.scripts;
+      var scriptEditorHTMLTemplate = __defaultLayouts.querySelector('.butter-script-editor');
+
+      Object.keys(scripts).forEach(function(key){
+        if(key !== '_compiled'){
+          var scriptEditorContainer = scriptEditorHTMLTemplate.cloneNode(true);
+
+          scriptEditorContainer.querySelector('.property-name').appendChild(document.createTextNode(key));
+          editorContainer.appendChild(scriptEditorContainer);
+
+          var codeMirror = CodeMirror.fromTextArea(scriptEditorContainer.querySelector('textarea'), {
+            theme: 'ambiance',
+            lineWrapping: true,
+            lineNumbers: true,
+            mode: 'javascript'
+          });
+
+          var globalScope = {
+            butter: butter,
+            popcorn: butter.currentMedia.popcorn.popcorn,
+            event: trackEvent.popcornTrackEvent,
+            foo: function(){
+              LangUtils.setTransitionProperty(document.body, "all 1s ease-in-out");
+              LangUtils.setTransformProperty(document.body, "rotate(45deg)");
+            },
+            bar: function(){
+              LangUtils.setTransformProperty(document.body, "");
+            }
+          };
+
+          scripts._compiled = scripts._compiled || {};
+
+          codeMirror.on('blur', function(instance, changed){
+            var code = codeMirror.getValue();
+            var argKeys = Object.keys(globalScope);
+            var argValues = argKeys.map(function(key){return globalScope[key]});
+            var fn = new Function(argKeys.join(','), code);
+            scripts[key] = code;
+            scripts._compiled[key] = function(){
+              return fn.apply(fn, argValues);
+            };
+            trackEvent.update({
+              scripts: scripts
+            });
+          });
+        }
+      });
+    };
+
+    extendObject.addTab = function(name, container, button){
+      _tabs[name] = {
+        container: container,
+        button: button
+      };
+
+      button.addEventListener('click', function(e){
+        if(container.classList.contains('display-off')){
+          Object.keys(_tabs).forEach(function(key){
+            var tab = _tabs[key];
+            if(tab.container === container){
+              tab.container.classList.remove('display-off');
+              tab.button.classList.add('butter-active');
+            }
+            else {
+              tab.container.classList.add('display-off');
+              tab.button.classList.remove('butter-active');
+            }
+          });
+          extendObject.scrollbar.update();
+        }
+      }, false);
+    };
 
     /**
      * Member: setErrorState
@@ -774,9 +850,6 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
           ignoreManifestKeys = options.ignoreManifestKeys || [],
           i, l;
 
-      basicContainer = options.basicContainer || extendObject.rootElement;
-      advancedContainer = options.advancedContainer || extendObject.rootElement;
-
       if ( !trackEvent.manifest ) {
         throw "Unable to create properties from null manifest. Perhaps trackevent is not initialized properly yet.";
       }
@@ -790,7 +863,7 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
       for ( i = 0, l = manifestKeys.length; i < l; ++i ) {
         item = manifestKeys[ i ];
         optionGroup = manifestOptions[ item ].group ? manifestOptions[ item ].group : "basic";
-        container = optionGroup === "advanced" ? advancedContainer : basicContainer;
+        container = _tabs[optionGroup] ? _tabs[optionGroup].container : extendObject.rootElement;
         if ( ignoreManifestKeys && ignoreManifestKeys.indexOf( item ) > -1 ) {
           continue;
         }

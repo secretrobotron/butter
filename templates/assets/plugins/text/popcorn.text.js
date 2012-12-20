@@ -157,6 +157,10 @@
         },
         zindex: {
           hidden: true
+        },
+        scripts: {
+          onStart: "",
+          onEnd: ""
         }
       }
     },
@@ -278,6 +282,14 @@
         // use the default option if it doesn't exist
         return options.text || options._natives.manifest.options.text[ "default" ];
       };
+
+      if(!options.scripts){
+        options.scripts = {};
+
+        Object.keys(options._natives.manifest.options.scripts).forEach(function(key){
+          options.scripts[key] = "";
+        });
+      }
     },
 
     start: function( event, options ) {
@@ -285,12 +297,22 @@
         options._transitionContainer.classList.add( "on" );
         options._transitionContainer.classList.remove( "off" );
       }
+
+      console.log(options.scripts);
+
+      if(options.scripts && options.scripts._compiled && options.scripts._compiled.onStart){
+        options.scripts._compiled.onStart();
+      }
     },
 
     end: function( event, options ) {
       if ( options._transitionContainer ) {
         options._transitionContainer.classList.add( "off" );
         options._transitionContainer.classList.remove( "on" );
+      }
+
+      if(options.scripts && options.scripts._compiled && options.scripts._compiled.onEnd){
+        options.scripts._compiled.onEnd();
       }
     },
 
