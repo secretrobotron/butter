@@ -2,12 +2,18 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
-define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tooltip",
+define([  "util/lang", "util/keys", "util/time",
+          "./base-editor", "ui/widget/tooltip",
+          "butter-script/manager",
           "text!layouts/trackevent-editor-defaults.html" ],
-  function( LangUtils, KeysUtils, TimeUtils, BaseEditor, ToolTip,
+  function( LangUtils, KeysUtils, TimeUtils,
+            BaseEditor, ToolTip,
+            ButterScriptManager,
             DEFAULT_LAYOUT_SNIPPETS ) {
 
   var NULL_FUNCTION = function(){};
+
+  BaseEditor.layoutManager.addLayout("trackevent-defaults", DEFAULT_LAYOUT_SNIPPETS);
 
   var __defaultLayouts = LangUtils.domFragment( DEFAULT_LAYOUT_SNIPPETS ),
       __googleFonts = [
@@ -52,13 +58,26 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
    * @param {DOMElement} rootElement: The root element to which the editor's content will be attached
    * @param {Object} events: Events such as 'open' and 'close' can be defined on this object to be called at the appropriate times
    */
-  function TrackEventEditor( extendObject, butter, rootElement, events ) {
+  function TrackEventEditor( extendObject, butter, rootElement, events, options ) {
     // Wedge a check for scrollbars into the open event if it exists
     var _oldOpenEvent = events.open,
         _trackEventUpdateErrorCallback = NULL_FUNCTION,
         _errorMessageContainer,
         _trackEvent,
         _tabs = {};
+
+    var _scriptManager = new ButterScriptManager.ButterScriptManager(butter, {
+      popcorn: butter.currentMedia.popcorn.popcorn,
+      foo: function(){
+        LangUtils.setTransitionProperty(document.body, "all 1s ease-in-out");
+        LangUtils.setTransformProperty(document.body, "rotate(45deg)");
+      },
+      bar: function(){
+        LangUtils.setTransformProperty(document.body, "");
+      }
+    });
+
+    options = options || {};
 
     events.open = function( parentElement, trackEvent ) {
       var basicButton = rootElement.querySelector( ".basic-tab" ),
@@ -79,7 +98,7 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
 
       // Code for handling basic/advanced options tabs are going to be the same. If the user defined these buttons
       // handle it for them here rather than force them to write the code in their editor
-      if ( basicButton && advancedButton ) {
+      if ( !options.manualTabSetup && basicButton && advancedButton ) {
         basicButton.addEventListener( "mouseup", function( e ) {
           if ( basicTab.classList.contains( "display-off" ) ) {
             basicTab.classList.toggle( "display-off" );
@@ -138,30 +157,18 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
             mode: 'javascript'
           });
 
-          var globalScope = {
-            butter: butter,
-            popcorn: butter.currentMedia.popcorn.popcorn,
-            event: trackEvent.popcornTrackEvent,
-            foo: function(){
-              LangUtils.setTransitionProperty(document.body, "all 1s ease-in-out");
-              LangUtils.setTransformProperty(document.body, "rotate(45deg)");
-            },
-            bar: function(){
-              LangUtils.setTransformProperty(document.body, "");
-            }
-          };
+          if(scripts[key]){
+            codeMirror.setValue(scripts[key]);
+          }
 
           scripts._compiled = scripts._compiled || {};
 
           codeMirror.on('blur', function(instance, changed){
             var code = codeMirror.getValue();
-            var argKeys = Object.keys(globalScope);
-            var argValues = argKeys.map(function(key){return globalScope[key]});
-            var fn = new Function(argKeys.join(','), code);
             scripts[key] = code;
-            scripts._compiled[key] = function(){
-              return fn.apply(fn, argValues);
-            };
+            scripts._compiled[key] = _scriptManager.createScript(code, {
+              event: trackEvent.popcornTrackEvent
+            });
             trackEvent.update({
               scripts: scripts
             });
@@ -171,20 +178,18 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
     };
 
     extendObject.addTab = function(name, container, button){
-      _tabs[name] = {
+      var thisTab = _tabs[name] = {
         container: container,
         button: button
       };
 
       button.addEventListener('click', function(e){
         if(container.classList.contains('display-off')){
+          thisTab.container.classList.remove('display-off');
+          thisTab.button.classList.add('butter-active');
           Object.keys(_tabs).forEach(function(key){
             var tab = _tabs[key];
-            if(tab.container === container){
-              tab.container.classList.remove('display-off');
-              tab.button.classList.add('butter-active');
-            }
-            else {
+            if(tab !== thisTab){
               tab.container.classList.add('display-off');
               tab.button.classList.remove('butter-active');
             }
@@ -833,8 +838,6 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
      *  {TrackEvent} trackEvent: TrackEvent from which manifest will be retrieved
      *  {Function} itemCallback: Callback which is passed to createManifestItem for each element created
      *  {Array} manifestKeys: Optional. If only specific keys are desired from the manifest, use them
-     *  {DOMElement} basicContainer: Optional. If specified, elements will be inserted into basicContainer, not rootElement
-     *  {DOMElement} advancedContainer: Optional. If specified, elements will be inserted into advancedContainer, not rootElement
      *  {Array} ignoreManifestKeys: Optional. Keys in this array are ignored such that elements for them are not created
      */
     extendObject.createPropertiesFromManifest = function( options ) {
@@ -844,8 +847,7 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
           container,
           optionGroup,
           manifestKeys,
-          basicContainer,
-          advancedContainer,
+          defaultElement = options.basicContainer || extendObject.rootElement,
           trackEvent = options.trackEvent,
           ignoreManifestKeys = options.ignoreManifestKeys || [],
           i, l;
@@ -863,7 +865,7 @@ define([ "util/lang", "util/keys", "util/time", "./base-editor", "ui/widget/tool
       for ( i = 0, l = manifestKeys.length; i < l; ++i ) {
         item = manifestKeys[ i ];
         optionGroup = manifestOptions[ item ].group ? manifestOptions[ item ].group : "basic";
-        container = _tabs[optionGroup] ? _tabs[optionGroup].container : extendObject.rootElement;
+        container = _tabs[optionGroup] ? _tabs[optionGroup].container : defaultElement;
         if ( ignoreManifestKeys && ignoreManifestKeys.indexOf( item ) > -1 ) {
           continue;
         }

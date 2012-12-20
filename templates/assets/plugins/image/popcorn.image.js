@@ -256,6 +256,14 @@
           return "Image Plugin";
         };
       }
+
+      if(!options.scripts){
+        options.scripts = {};
+
+        Object.keys(options._natives.manifest.options.scripts).forEach(function(key){
+          options.scripts[key] = "";
+        });
+      }
     },
 
     start: function( event, options ) {
@@ -267,6 +275,10 @@
         options._container.classList.add( "on" );
         options._container.classList.remove( "off" );
       }
+
+      if(options.scripts && options.scripts._compiled && options.scripts._compiled.onStart){
+        options.scripts._compiled.onStart();
+      }
     },
 
     end: function( event, options ) {
@@ -277,6 +289,10 @@
 
         options._container.classList.add( "off" );
         options._container.classList.remove( "on" );
+      }
+
+      if(options.scripts && options.scripts._compiled && options.scripts._compiled.onEnd){
+        options.scripts._compiled.onEnd();
       }
     },
 
@@ -383,6 +399,10 @@
         },
         zindex: {
           hidden: true
+        },
+        scripts: {
+          onStart: "",
+          onEnd: ""
         }
       }
     }

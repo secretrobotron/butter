@@ -26,6 +26,8 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
   // Expose DefaultEditor to external editors
   Editor.DefaultEditor = DefaultEditor;
 
+  Editor.layoutManager.addLayout("editor-area", EDITOR_AREA_LAYOUT);
+
   /**
    * Class: EventEditor
    *

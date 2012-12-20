@@ -26,7 +26,9 @@ define( [ "util/lang", "util/xhr",
         }
       }, "text/plain" );
     };
- }
+  }
+
+  var __layoutManager = BaseEditor.layoutManager;
 
   /**
    * Namespace: Editor
@@ -35,6 +37,8 @@ define( [ "util/lang", "util/xhr",
 
     BaseEditor: BaseEditor,
     TrackEventEditor: TrackEventEditor,
+
+    layoutManager: __layoutManager,
 
     /**
      * Function: register
@@ -47,6 +51,7 @@ define( [ "util/lang", "util/xhr",
      */
     register: function( name, layoutSrc, ctor, persist ) {
       __editors[ name ] = {
+        name: name,
         create: ctor,
         persist: !!persist,
         layout: layoutSrc || "",
@@ -92,11 +97,17 @@ define( [ "util/lang", "util/xhr",
     initialize: function( readyCallback, baseDir ) {
       var editorName,
           editorsLoaded = 0,
-          editorsToLoad = [];
+          editorsToLoad = [],
+          tempLayout;
 
       for ( editorName in __editors ) {
         if ( __editors.hasOwnProperty( editorName ) && __editors[ editorName ].deferredLayouts.length > 0 ) {
           editorsToLoad.push( __editors[ editorName ] );
+        }
+        else if(__editors[editorName].layout) {
+          tempLayout = __editors[editorName].layout;
+          __editors[editorName].layout = editorName + '-editor-' + Date.now();
+          __layoutManager.addLayout(__editors[editorName].layout, tempLayout);
         }
       }
 
@@ -107,6 +118,9 @@ define( [ "util/lang", "util/xhr",
             ++finishedLayouts;
             editor.layout += layoutData;
             if ( finishedLayouts === editor.deferredLayouts.length ) {
+              var layoutName = editor.name + '-editor-' + Date.now();
+              __layoutManager.addLayout(layoutName, editor.layout);
+              editor.layout = layoutName;
               editor.deferredLayouts = null;
               ++editorsLoaded;
               if ( editorsLoaded === editorsToLoad.length ) {
@@ -138,7 +152,7 @@ define( [ "util/lang", "util/xhr",
       if ( description.layout ) {
         // Collect the element labeled with the 'butter-editor' class to avoid other elements (such as comments)
         // which may exist in the layout.
-        compiledLayout = LangUtils.domFragment( description.layout );
+        compiledLayout = __layoutManager.getLayout(description.layout);
 
         // Expose the full compiledLayout to the editor for later use.
         completeLayout = compiledLayout;

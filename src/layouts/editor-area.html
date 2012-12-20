@@ -20,3 +20,18 @@
   </div>
   <div class="butter-editor-content"></div>
 </div>
+
+<ul class="butter-editor-tabs" butter-mixin="editor-tabs"></ul>
+<li class="butter-editor-tab-item" butter-mixin="editor-tab-item"><a class="butter-btn" butter-mixin-classes="tab" butter-mixin-content-destination></a></li>
+
+<div class="butter-editor-body scrollbar-container" butter-mixin="editor-body" butter-mixin-classes="body">
+  <div class="editor-options-wrapper scrollbar-outer" butter-mixin-content-destination>
+    <div class="error-message-container">
+      <div class="error-message"></div>
+    </div>
+  </div>
+</div>
+
+<div class="editor-options scrollbar-inner" butter-mixin="editor-body-content-container"></div>
+
+<div class="butter-editor allow-scrollbar" butter-mixin="editor" butter-mixin-classes="editor"></div>

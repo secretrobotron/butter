@@ -298,8 +298,6 @@
         options._transitionContainer.classList.remove( "off" );
       }
 
-      console.log(options.scripts);
-
       if(options.scripts && options.scripts._compiled && options.scripts._compiled.onStart){
         options.scripts._compiled.onStart();
       }

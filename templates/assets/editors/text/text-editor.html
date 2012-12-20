@@ -2,21 +2,16 @@
       If a copy of the MIT license was not distributed with this file, you can
       obtain one at https://raw.github.com/mozilla/butter/master/LICENSE -->
 
-<div class="butter-editor default-editor allow-scrollbar">
+<buttermixin type="editor" editor-classes="default-editor">
   <h1>Text Editor</h1>
-  <ul class="butter-editor-tabs">
-    <li><a class="butter-btn basic-tab butter-active">Basic</a></li>
-    <li><a class="butter-btn advanced-tab">Advanced</a></li>
-    <li><a class="butter-btn scripts-tab">Scripts</a></li>
-  </ul>
-  <div class="butter-editor-body butter-tabs-spacing scrollbar-container">
-    <div class="editor-options-wrapper scrollbar-outer">
-      <div class="error-message-container">
-        <div class="error-message"></div>
-      </div>
-      <div class="editor-options scrollbar-inner"></div>
-      <div class="advanced-options scrollbar-inner display-off"></div>
-      <div class="scripts scrollbar-inner display-off"></div>
-    </div>
-  </div>
-</div>
+  <buttermixin type="editor-tabs">
+    <buttermixin type="editor-tab-item" tab-classes="basic-tab butter-active">Basic</buttermixin>
+    <buttermixin type="editor-tab-item" tab-classes="advanced-tab">Advanced</buttermixin>
+    <buttermixin type="editor-tab-item" tab-classes="scripts-tab">Scripts</buttermixin>
+  </buttermixin>
+  <buttermixin type="editor-body" body-classes="butter-tabs-spacing">
+    <buttermixin type="editor-body-content-container"></buttermixin>
+    <buttermixin type="editor-body-content-container" classes="advanced-options display-off"></buttermixin>
+    <buttermixin type="editor-body-content-container" classes="scripts display-off"></buttermixin>
+  </buttermixin>
+</buttermixin>

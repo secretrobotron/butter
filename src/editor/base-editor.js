@@ -2,8 +2,8 @@
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
-define( [ "core/eventmanager", "util/scrollbars", "ui/widget/tooltip", "ui/widget/textbox" ],
-  function( EventManager, Scrollbars, ToolTip, TextboxWrapper ) {
+define( [ "core/eventmanager", "util/scrollbars", "ui/widget/tooltip", "ui/widget/textbox", "layouts/manager" ],
+  function( EventManager, Scrollbars, ToolTip, TextboxWrapper, LayoutManager ) {
 
   /**
    * Class: BaseEditor
@@ -212,7 +212,8 @@ define( [ "core/eventmanager", "util/scrollbars", "ui/widget/tooltip", "ui/widge
   }
 
   return {
-    extend: BaseEditor
+    extend: BaseEditor,
+    layoutManager: new LayoutManager.LayoutManager()
   };
 
 });

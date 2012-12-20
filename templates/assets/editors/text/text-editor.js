@@ -193,7 +193,10 @@
       close: function() {
         _trackEvent.unlisten( "trackeventupdated", onTrackEventUpdated );
       }
+    }, {
+      manualTabSetup: true
     });
 
   });
+
 }( window.Butter ));
