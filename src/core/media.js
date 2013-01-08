@@ -274,13 +274,20 @@
 
       function setupContent(){
         _url = _url || '#t=,' + DEFAULT_DURATION;
-      
+
         // In the case of URL being a string, check that it doesn't follow our format for
         // Null Video (EG #t=,200). Without the check it incorrectly will splice on the comma.
         if ( _url && _url.indexOf( "#t" ) !== 0 && _url.indexOf( "," ) > -1 ) {
           _url = _url.split( "," );
         }
         if ( _url ){
+          if(!_target){
+            var targetElement = document.querySelector('#null-target') || document.createElement('div');
+            targetElement.id = 'null-target';
+            document.body.appendChild(targetElement);
+            _target = 'null-target';
+          }
+
           _popcornWrapper.prepare( _url, _target, _popcornOptions, _this.popcornCallbacks, _this.popcornScripts );
         }
       }
