@@ -172,7 +172,10 @@ define( [ "core/logger", "core/eventmanager", "util/uri" ], function( Logger, Ev
       // if there isn't a target, we can't really set anything up, so stop here
       if( !target ){
         _logger.log( "Warning: tried to prepare media with null target." );
-        return;
+        var targetElement = document.createElement('div');
+        targetElement.id = 'null-target';
+        document.body.appendChild(targetElement);
+        target = 'null-target';
       }
 
       // only enter this block if popcorn doesn't already exist (call clear() first to destroy it)
@@ -191,6 +194,7 @@ define( [ "core/logger", "core/eventmanager", "util/uri" ], function( Logger, Ev
           }, popcornTimeoutWrapper );
         }
         catch( e ) {
+          console.log(':(', e);
           // if we've reached here, we have an internal failure in butter or popcorn
           failureWrapper( e );
         }

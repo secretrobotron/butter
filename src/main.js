@@ -794,25 +794,32 @@
           }
         }
 
-        // attempt to load data from savedDataUrl in query string
-        loadFromSavedDataUrl( savedDataUrl, function( savedData ) {
-          // if there's no savedData returned, or the returned object does not
-          // contain a media attribute, load the config specified saved data
-          if ( !savedData || savedData.error || !savedData.media ) {
-            // if previous attempt failed, try loading data from the savedDataUrl value in the config
-            loadFromSavedDataUrl( _config.value( "savedDataUrl" ), function( savedData ) {
-              if ( savedData ) {
-                doImport( savedData );
-              }
+        if(savedDataUrl){
+
+          // attempt to load data from savedDataUrl in query string
+          loadFromSavedDataUrl( savedDataUrl, function( savedData ) {
+            // if there's no savedData returned, or the returned object does not
+            // contain a media attribute, load the config specified saved data
+            if ( !savedData || savedData.error || !savedData.media ) {
+              // if previous attempt failed, try loading data from the savedDataUrl value in the config
+              loadFromSavedDataUrl( _config.value( "savedDataUrl" ), function( savedData ) {
+                if ( savedData ) {
+                  doImport( savedData );
+                }
+                finishedCallback( project );
+              });
+            }
+            else {
+              // otherwise, attempt import
+              doImport( savedData );
               finishedCallback( project );
-            });
-          }
-          else {
-            // otherwise, attempt import
-            doImport( savedData );
-            finishedCallback( project );
-          }
-        });
+            }
+          });
+        }
+        else{
+          _this.addMedia();
+          finishedCallback(project);
+        }
 
       }
 
@@ -849,7 +856,7 @@
                     project.template = project.template || _config.value( "name" );
                     _this.project = project;
                     _this.chain( project, [ "projectchanged", "projectsaved" ] );
-
+                    
                     // Fire the ready event
                     _this.dispatch( "ready", _this );
                   }

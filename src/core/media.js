@@ -15,6 +15,8 @@
     var MEDIA_ELEMENT_SAFETY_POLL_INTERVAL = 500,
         MEDIA_ELEMENT_SAFETY_POLL_ATTEMPTS = 10;
 
+    var DEFAULT_DURATION = 10;
+
     var __guid = 0;
 
     var Media = function ( mediaOptions ) {
@@ -271,12 +273,14 @@
       }; //getManifest
 
       function setupContent(){
+        _url = _url || '#t=,' + DEFAULT_DURATION;
+      
         // In the case of URL being a string, check that it doesn't follow our format for
         // Null Video (EG #t=,200). Without the check it incorrectly will splice on the comma.
         if ( _url && _url.indexOf( "#t" ) !== 0 && _url.indexOf( "," ) > -1 ) {
           _url = _url.split( "," );
         }
-        if ( _url && _target ){
+        if ( _url ){
           _popcornWrapper.prepare( _url, _target, _popcornOptions, _this.popcornCallbacks, _this.popcornScripts );
         }
       }

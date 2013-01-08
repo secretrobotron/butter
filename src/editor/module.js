@@ -35,7 +35,6 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
     var _currentEditor,
         _editorAreaDOMRoot = LangUtils.domFragment( EDITOR_AREA_LAYOUT, ".butter-editor-area" ),
         _editorContentArea = _editorAreaDOMRoot.querySelector( ".butter-editor-content" ),
-        _header,
         _toggler,
         _this = this,
         _createdEditors = {},
@@ -44,16 +43,6 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
     EventManager.extend( _this );
 
     ButterNamespace.Editor = Editor;
-
-    _header = new Header( _editorAreaDOMRoot, _this );
-
-    function setupHeader() {
-      if ( butter.project.isSaved ) {
-        _header.views.saved();
-      } else {
-        _header.views.unSaved();
-      }
-    }
 
     /**
      * Member: openEditor
@@ -100,14 +89,6 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
       _currentEditor.listen( "back", function( e ) {
         _this.openEditor( DEFAULT_EDITOR_NAME );
       });
-
-      // Check if this is a top-level editor
-      if ( _header.focusMap[ editorName ] ) {
-        _header.setFocus( editorName );
-      } else {
-        // Otherwise, it is an event editor, so focus the default editor
-        _header.setFocus( DEFAULT_EDITOR_NAME );
-      }
 
 
       // If the editor was closed when this was called, remove classes keeping it hidden
@@ -204,25 +185,6 @@ define( [ "core/eventmanager", "core/trackevent", "./editor",
           editorsLoaded = 0;
 
       if ( butter.config.value( "ui" ).enabled !== false ) {
-
-        // Set up views for share editor
-        butter.listen( "ready", setupHeader );
-        butter.listen( "autologinsucceeded", setupHeader );
-        butter.listen( "authenticated", setupHeader );
-
-        butter.listen( "projectsaved", _header.views.saved );
-        butter.listen( "logout", _header.views.unSaved );
-
-        // Set up views for plugin list editor
-        butter.listen( "mediacontentchanged", _header.views.disablePlugins );
-        butter.listen( "mediaready", _header.views.enablePlugins );
-        document.body.classList.add( "butter-editor-spacing" );
-
-        // Start minimized
-        _editorAreaDOMRoot.classList.add( "minimized" );
-        document.body.classList.remove( "editor-open" );
-
-        butter.ui.setEditor( _editorAreaDOMRoot );
 
         var config = butter.config.value( "editor" );
         for ( var editorName in config ) {
