@@ -92,16 +92,23 @@ define( [ "core/logger", "./plugin-list", "./plugin" ],
         }
       }
 
-      butter.loader.load( pluginLoadDescriptors, function() {
-        for ( i = 0, l = newPlugins.length; i < l; i++ ) {
-          plugin = newPlugins[ i ];
-          _plugins.push( plugin );
-          butter.dispatch( "pluginadded", plugin );
-        }
-        onReadyCallback();
-      }, function() {
-        console.warn( "Failed to load all plugins. Please check logs and file paths." );
-      });
+      if(pluginLoadDescriptors.length){
+        butter.loader.load( pluginLoadDescriptors, function() {
+          for ( i = 0, l = newPlugins.length; i < l; i++ ) {
+            plugin = newPlugins[ i ];
+            _plugins.push( plugin );
+            butter.dispatch( "pluginadded", plugin );
+          }
+          onReadyCallback();
+        }, function() {
+          console.warn( "Failed to load all plugins. Please check logs and file paths." );
+        });
+      }
+      else {
+        setTimeout(function(){
+          onReadyCallback();
+        }, 50);
+      }
 
       return newPlugins;
     };
