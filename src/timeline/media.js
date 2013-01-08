@@ -113,11 +113,11 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
     }
 
     function onTrackEventSelected( e ) {
-      butter.editor.editTrackEvent( e.target );
+
     }
 
     function onTrackEventDeselected( e ) {
-      butter.editor.closeTrackEventEditor( e.target );
+
     }
 
     function onMediaReady(){

@@ -21,8 +21,13 @@
   },
   "plugin": {
     "plugins": [
+      {
+        "type": "html",
+        "path": "{{baseDir}}templates/assets/plugins/html/popcorn.html.js"
+      }
     ],
     "defaults": [
+      "html"
     ]
   },
   "player": {
