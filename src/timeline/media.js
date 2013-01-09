@@ -56,6 +56,10 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
       _timebar.update();
     }
 
+    _this.setZoomLevel = function(zoom){
+      _superScrollbar.setZoomLevel(zoom);
+    };
+
     _media.listen( "mediaplay", function(){
       // Make sure the viewport contains the scrubber
       _tracksContainer.snapTo( _media.currentTime );

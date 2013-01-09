@@ -186,6 +186,10 @@ define( [ "util/lang", "text!layouts/super-scrollbar.html" ],
     _leftHandle.addEventListener( "mousedown", onLeftMouseDown, false );
     _rightHandle.addEventListener( "mousedown", onRightMouseDown, false );
 
+    _this.setZoomLevel = function(zoom){
+      scaleViewPort(zoom);
+    };
+
     /**
      * scaleViewPort
      *

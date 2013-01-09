@@ -29,6 +29,10 @@ define( [
       return _currentMedia.trackContainer.getTrackWidth();
     };
 
+    this.setZoomLevel = function(zoom){
+      _currentMedia.setZoomLevel(zoom);
+    };
+
     butter.listen( "mediaadded", function( event ){
       var mediaObject = event.data,
           media = new Media( butter, mediaObject );
