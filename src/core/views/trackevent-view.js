@@ -243,6 +243,8 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
 
               _draggable.selected = _trackEvent.selected;
 
+              var trackRect;
+
               _resizable = DragNDrop.resizable( _element, {
                 containment: _parent.element.parentNode,
                 scroll: _parent.element.parentNode.parentNode,
@@ -250,6 +252,7 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
                 start: function( resizeEvent ) {
                   _resizing = true;
                   _this.dispatch( "trackeventresizestarted", resizeEvent );
+                  trackRect = _parent.element.parentNode.getBoundingClientRect();
                 },
                 stop: function( resizeEvent ) {
                   _resizing = false;
@@ -264,7 +267,12 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
                   if ( _onResize ) {
                     _onResize( _trackEvent, x, w, resizeEvent, resizeEvent.direction );
                   }
-                  _this.dispatch('trackeventresizing');
+
+                  var start = x / trackRect.width * _trackEvent.track._media.duration;
+                  _this.dispatch('trackeventresizing', {
+                    start: start,
+                    end: start + w / trackRect.width * _trackEvent.track._media.duration
+                  });
                 }
               });
 
