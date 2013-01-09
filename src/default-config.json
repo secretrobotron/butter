@@ -1,7 +1,7 @@
 {
   "name": "default-config",
   "baseDir": "../",
-  "crashReporter": true,
+  "crashReporter": false,
   "cssRenderClientSide": false,
   "snapshotHTMLOnReady": false,
   "scrapePage": true,
@@ -9,7 +9,7 @@
   "title": "Popcorn Maker",
   "ui": {
     "enabled": true,
-    "onLeaveDialog": true,
+    "onLeaveDialog": false,
     "trackEventHighlight": "click"
   },
   "makeVideoURLsUnique": true,
