@@ -264,6 +264,7 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
                   if ( _onResize ) {
                     _onResize( _trackEvent, x, w, resizeEvent, resizeEvent.direction );
                   }
+                  _this.dispatch('trackeventresizing');
                 }
               });
 
