@@ -219,11 +219,16 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
               // Store padding values to negate from width calculations
               _padding = paddingLeft + paddingRight;
 
+              var trackRect, oldTrack, mediaDuration;
+
               _draggable = DragNDrop.draggable( _element, {
                 containment: _parent.element.parentNode,
                 scroll: _parent.element.parentNode.parentNode,
                 data: _this,
                 start: function(){
+                  trackRect = _parent.element.parentNode.getBoundingClientRect();
+                  oldTrack = _trackEvent.track;
+                  mediaDuration = oldTrack._media.duration;
                   _dragging = true;
                   _element.classList.add( "trackevent-dragging" );
                   _this.dispatch( "trackeventdragstarted" );
@@ -234,6 +239,16 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
                   _this.dispatch( "trackeventdragstopped" );
                 },
                 drag: function( draggable, droppable ) {
+                  var elementRect = draggable.element.getBoundingClientRect();
+                  var w = elementRect.width;
+                  var x = draggable.element.getBoundingClientRect().left -
+                          draggable.element.parentNode.getBoundingClientRect().left;
+                  var start = x / trackRect.width * mediaDuration;
+                  _this.dispatch('trackeventdragging', {
+                    start: start,
+                    end: start + w / trackRect.width * mediaDuration
+                  });
+
                   if ( _onDrag ) {
                     _onDrag( draggable, droppable );
                   }
@@ -242,8 +257,6 @@ define( [ "core/logger", "core/eventmanager", "util/dragndrop",
               });
 
               _draggable.selected = _trackEvent.selected;
-
-              var trackRect;
 
               _resizable = DragNDrop.resizable( _element, {
                 containment: _parent.element.parentNode,
