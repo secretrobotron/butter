@@ -4,11 +4,9 @@
 
 define([  "util/lang", "util/keys", "util/time",
           "./base-editor", "ui/widget/tooltip",
-          "butter-script/manager",
           "text!layouts/trackevent-editor-defaults.html" ],
   function( LangUtils, KeysUtils, TimeUtils,
             BaseEditor, ToolTip,
-            ButterScriptManager,
             DEFAULT_LAYOUT_SNIPPETS ) {
 
   var NULL_FUNCTION = function(){};
@@ -65,17 +63,6 @@ define([  "util/lang", "util/keys", "util/time",
         _errorMessageContainer,
         _trackEvent,
         _tabs = {};
-
-    var _scriptManager = new ButterScriptManager.ButterScriptManager(butter, {
-      popcorn: butter.currentMedia.popcorn.popcorn,
-      foo: function(){
-        LangUtils.setTransitionProperty(document.body, "all 1s ease-in-out");
-        LangUtils.setTransformProperty(document.body, "rotate(45deg)");
-      },
-      bar: function(){
-        LangUtils.setTransformProperty(document.body, "");
-      }
-    });
 
     options = options || {};
 
@@ -138,44 +125,6 @@ define([  "util/lang", "util/keys", "util/time",
     BaseEditor.extend( extendObject, butter, rootElement, events );
 
     extendObject.defaultLayouts = __defaultLayouts.cloneNode( true );
-
-    extendObject.createScriptEditors = function(trackEvent, editorContainer){
-      var scripts = trackEvent.popcornTrackEvent.scripts;
-      var scriptEditorHTMLTemplate = __defaultLayouts.querySelector('.butter-script-editor');
-
-      Object.keys(scripts).forEach(function(key){
-        if(key !== '_compiled'){
-          var scriptEditorContainer = scriptEditorHTMLTemplate.cloneNode(true);
-
-          scriptEditorContainer.querySelector('.property-name').appendChild(document.createTextNode(key));
-          editorContainer.appendChild(scriptEditorContainer);
-
-          var codeMirror = CodeMirror.fromTextArea(scriptEditorContainer.querySelector('textarea'), {
-            theme: 'ambiance',
-            lineWrapping: true,
-            lineNumbers: true,
-            mode: 'javascript'
-          });
-
-          if(scripts[key]){
-            codeMirror.setValue(scripts[key]);
-          }
-
-          scripts._compiled = scripts._compiled || {};
-
-          codeMirror.on('blur', function(instance, changed){
-            var code = codeMirror.getValue();
-            scripts[key] = code;
-            scripts._compiled[key] = _scriptManager.createScript(code, {
-              event: trackEvent.popcornTrackEvent
-            });
-            trackEvent.update({
-              scripts: scripts
-            });
-          });
-        }
-      });
-    };
 
     extendObject.addTab = function(name, container, button){
       var thisTab = _tabs[name] = {
