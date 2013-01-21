@@ -11,7 +11,7 @@ define([  "util/lang", "util/keys", "util/time",
 
   var NULL_FUNCTION = function(){};
 
-  BaseEditor.layoutManager.addLayout("trackevent-defaults", DEFAULT_LAYOUT_SNIPPETS);
+  BaseEditor.layoutManager.addLayout( "trackevent-defaults", DEFAULT_LAYOUT_SNIPPETS );
 
   var __defaultLayouts = LangUtils.domFragment( DEFAULT_LAYOUT_SNIPPETS ),
       __googleFonts = [
@@ -127,25 +127,25 @@ define([  "util/lang", "util/keys", "util/time",
     extendObject.defaultLayouts = __defaultLayouts.cloneNode( true );
 
     extendObject.addTab = function(name, container, button){
-      var thisTab = _tabs[name] = {
+      var thisTab = _tabs[ name ] = {
         container: container,
         button: button
       };
 
-      button.addEventListener('click', function(e){
-        if(container.classList.contains('display-off')){
-          thisTab.container.classList.remove('display-off');
-          thisTab.button.classList.add('butter-active');
-          Object.keys(_tabs).forEach(function(key){
-            var tab = _tabs[key];
-            if(tab !== thisTab){
-              tab.container.classList.add('display-off');
-              tab.button.classList.remove('butter-active');
+      button.addEventListener( "click", function( e ) {
+        if ( container.classList.contains( "display-off" ) ) {
+          thisTab.container.classList.remove( "display-off" );
+          thisTab.button.classList.add( "butter-active" );
+          Object.keys( _tabs ).forEach( function( key ) {
+            var tab = _tabs[ key ];
+            if ( tab !== thisTab ) {
+              tab.container.classList.add( "display-off" );
+              tab.button.classList.remove( "butter-active" );
             }
           });
           extendObject.scrollbar.update();
         }
-      }, false);
+      }, false );
     };
 
     /**

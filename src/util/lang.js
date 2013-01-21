@@ -6,9 +6,9 @@ define( [ "./shims" ], function(){
 
   var DEFAULT_TRANSITION_TIMEOUT = 15;
 
-  function getBrowserPrefixedProperty(suffix){
+  function getBrowserPrefixedProperty( suffix ) {
     var div = document.createElement( "div" );
-    var choices = "Webkit Moz O ms".split( " " ).map( function( prefix ) { return prefix + suffix[0].toUpperCase() + suffix.substr(1); } );
+    var choices = "Webkit Moz O ms".split( " " ).map( function( prefix ) { return prefix + suffix[ 0 ].toUpperCase() + suffix.substr( 1 ); } );
 
     for ( var i = choices.length; i >= 0; --i ) {
       if ( div.style[ choices[ i ] ] !== undefined ) {
@@ -20,8 +20,8 @@ define( [ "./shims" ], function(){
   }
 
   var __prefixedProperties = {
-    transform: getBrowserPrefixedProperty("transform"),
-    transition: getBrowserPrefixedProperty("transition")
+    transform: getBrowserPrefixedProperty( "transform" ),
+    transition: getBrowserPrefixedProperty( "transition" )
   };
 
   /**
@@ -184,10 +184,10 @@ define( [ "./shims" ], function(){
       element.style[ getBrowserPrefixedProperty('transition') ] = transition;
     },
 
-    getBrowserPrefixedProperty: function(suffix){
-      if(!__prefixedProperties[suffix]){
-        var property = getBrowserPrefixedProperty(suffix);
-        __prefixedProperties[suffix] = property;
+    getBrowserPrefixedProperty: function( suffix ) {
+      if ( !__prefixedProperties[ suffix ] ) {
+        var property = getBrowserPrefixedProperty( suffix );
+        __prefixedProperties[ suffix ] = property;
       }
       return __prefixedProperties[suffix];
     },

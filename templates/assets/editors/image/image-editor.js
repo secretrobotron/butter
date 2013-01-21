@@ -11,9 +11,7 @@
 
     var _rootElement = rootElement,
         _propertiesContainer = _rootElement.querySelector( ".properties" ),
-        _scriptsContainer = _rootElement.querySelector( ".scripts" ),
-        _propertiesButton = _rootElement.querySelector('.butter-btn.properties-tab'),
-        _scriptsButton = _rootElement.querySelector('.butter-btn.scripts-tab'),
+        _propertiesButton = _rootElement.querySelector( ".butter-btn.properties-tab" ),
         _tagRadio = _rootElement.querySelector( "#image-tag-radio" ),
         _galleryRadio = _rootElement.querySelector( "#image-gallery-radio" ),
         _tagInput = _rootElement.querySelector( "#image-tag-input" ),
@@ -290,17 +288,14 @@
       startEndElement = _this.createStartEndInputs( trackEvent, updateTrackEvent );
       container.insertBefore( startEndElement, container.firstChild );
 
-      _this.addTab('properties', _propertiesContainer, _propertiesButton);
-      _this.addTab('scripts', _scriptsContainer, _scriptsButton);
+      _this.addTab( "properties", _propertiesContainer, _propertiesButton );
 
       _this.createPropertiesFromManifest({
         trackEvent: trackEvent,
         callback: callback,
         basicContainer: container,
-        manifestKeys: [ "transition", "scripts" ]
+        manifestKeys: [ "transition" ]
       });
-
-      _this.createScriptEditors(trackEvent, _scriptsContainer);
 
       attachHandlers();
 
