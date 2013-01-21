@@ -189,7 +189,7 @@ define( [ "./shims" ], function(){
         var property = getBrowserPrefixedProperty( suffix );
         __prefixedProperties[ suffix ] = property;
       }
-      return __prefixedProperties[suffix];
+      return __prefixedProperties[ suffix ];
     },
 
     getTransformProperty: function( element ) {
