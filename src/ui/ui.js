@@ -62,7 +62,7 @@ define( [ "core/eventmanager", "./toggler",
       if ( _uiOptions.onLeaveDialog ) {
         _unloadDialog = new UnloadDialog( butter );
       }
-      document.body.classList.add( "butter-tray-spacing" );
+      //document.body.classList.add( "butter-tray-spacing" );
     }
 
     this.loadIcons = function( plugins ) {

@@ -295,7 +295,7 @@ define([ "dialog/dialog", "util/lang", "text!layouts/header.html", "ui/user-data
     }
 
     this.attachToDOM = function() {
-      document.body.classList.add( "butter-header-spacing" );
+      //document.body.classList.add( "butter-header-spacing" );
       document.body.insertBefore( _rootElement, document.body.firstChild );
     };
 
