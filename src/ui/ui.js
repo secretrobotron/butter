@@ -62,7 +62,6 @@ define( [ "core/eventmanager", "./toggler",
       if ( _uiOptions.onLeaveDialog ) {
         _unloadDialog = new UnloadDialog( butter );
       }
-      document.body.classList.add( "butter-header-spacing" );
       document.body.classList.add( "butter-tray-spacing" );
     }
 
@@ -116,7 +115,7 @@ define( [ "core/eventmanager", "./toggler",
             butter.unlisten( "mediaready", firstRunInit );
 
             // Open the media-editor editor right after butter is finished starting up
-            butter.editor.openEditor( "media-editor" );
+            //butter.editor.openEditor( "media-editor" );
             FirstRun.init();
           }
 

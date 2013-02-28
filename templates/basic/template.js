@@ -7,11 +7,7 @@
     Butter.init({
       config: "config.json",
       ready: function( butter ) {
-        var script;
         EditorHelper.init( butter );
-        script = document.createElement( "script" );
-        script.src = "//www.mozilla.org/tabzilla/media/js/tabzilla.js";
-        document.body.appendChild( script );
 
         butter.listen( "mediaready", function mediaReady() {
           butter.unlisten( "mediaready", mediaReady );
