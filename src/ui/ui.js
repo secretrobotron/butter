@@ -582,7 +582,7 @@ define( [ "core/eventmanager", "./toggler",
 
     butter.listen( "ready", function(){
       _this.loadIndicator.stop();
-      _this.visible = true;
+      //_this.visible = true;
       _this.tray.show();
     });
 
@@ -591,14 +591,32 @@ define( [ "core/eventmanager", "./toggler",
       _this.loadIndicator.start();
       _toggler.visible = false;
       butter.ui.visible = false;
-      _toggler.state = true;
+      //_toggler.state = true;
     });
+
+    var mousemoveTimeout = null;
+    window.addEventListener('mousemove', function(e){
+      if(e.clientY > window.innerHeight - 210){
+        butter.ui.visible = true;
+        _toggler.state = false;
+        clearTimeout(mousemoveTimeout);
+        mousemoveTimeout = null;
+      }
+      else if(!mousemoveTimeout) {
+        mousemoveTimeout = setTimeout(function(){
+          butter.ui.visible = false;
+          _toggler.state = true;
+          mousemoveTimeout = null;
+        }, 1000);
+      }
+    }, false);
 
     butter.listen( "mediaready", function() {
       _this.loadIndicator.stop();
       _toggler.visible = true;
-      butter.ui.visible = true;
-      _toggler.state = false;
+      //butter.ui.visible = true;
+      //_toggler.state = false;
+      _toggler.state = true;
       bindKeyDownListener();
     });
 
