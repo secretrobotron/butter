@@ -594,23 +594,6 @@ define( [ "core/eventmanager", "./toggler",
       //_toggler.state = true;
     });
 
-    var mousemoveTimeout = null;
-    window.addEventListener('mousemove', function(e){
-      if(e.clientY > window.innerHeight - 210){
-        butter.ui.visible = true;
-        _toggler.state = false;
-        clearTimeout(mousemoveTimeout);
-        mousemoveTimeout = null;
-      }
-      else if(!mousemoveTimeout) {
-        mousemoveTimeout = setTimeout(function(){
-          butter.ui.visible = false;
-          _toggler.state = true;
-          mousemoveTimeout = null;
-        }, 1000);
-      }
-    }, false);
-
     butter.listen( "mediaready", function() {
       _this.loadIndicator.stop();
       _toggler.visible = true;
