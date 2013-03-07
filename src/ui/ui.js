@@ -3,12 +3,12 @@
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
 define( [ "core/eventmanager", "./toggler",
-          "./unload-dialog", "crashreporter",
+          "./unload-dialog",
           "first-run", "./tray", "editor/ui-kit",
           "core/trackevent", "dialog/dialog",
           "util/dragndrop" ],
   function( EventManager, Toggler,
-            UnloadDialog, CrashReporter,
+            UnloadDialog,
             FirstRun, Tray, UIKitDummy,
             TrackEvent, Dialog,
             DragNDrop ){
@@ -38,9 +38,6 @@ define( [ "core/eventmanager", "./toggler",
         _uiOptions = _uiConfig.value( "ui" ),
         _unloadDialog,
         _this = this;
-
-    // Top-level way to test our crash reporter.
-    butter.simulateError = CrashReporter.simulateError;
 
     EventManager.extend( _this );
 
@@ -107,9 +104,6 @@ define( [ "core/eventmanager", "./toggler",
           // icon preloading needs css to be loaded first
 
           _this.loadIcons( _uiConfig.value( "plugin" ).plugins );
-
-          // Spin-up the crash reporter
-          CrashReporter.init( butter, _uiConfig );
 
           function firstRunInit() {
             butter.unlisten( "mediaready", firstRunInit );
