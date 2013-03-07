@@ -3,11 +3,11 @@
  * obtain one at https://raw.github.com/mozilla/butter/master/LICENSE */
 
 define( [ "core/eventmanager", "./toggler",
-          "./header", "./unload-dialog", "crashreporter",
+          "./unload-dialog", "crashreporter",
           "first-run", "./tray", "editor/ui-kit",
           "core/trackevent", "dialog/dialog",
           "util/dragndrop" ],
-  function( EventManager, Toggler, Header,
+  function( EventManager, Toggler,
             UnloadDialog, CrashReporter,
             FirstRun, Tray, UIKitDummy,
             TrackEvent, Dialog,
@@ -47,7 +47,7 @@ define( [ "core/eventmanager", "./toggler",
     this.contentStateLocked = false;
 
     this.tray = new Tray();
-    this.header = new Header( butter, _uiConfig );
+    //this.header = new Header( butter, _uiConfig );
 
     // Filled in by the editor module
     this.editor = null;
@@ -116,7 +116,7 @@ define( [ "core/eventmanager", "./toggler",
 
             // Open the media-editor editor right after butter is finished starting up
             //butter.editor.openEditor( "media-editor" );
-            FirstRun.init();
+            //FirstRun.init();
           }
 
           butter.listen( "mediaready", firstRunInit );
@@ -129,7 +129,7 @@ define( [ "core/eventmanager", "./toggler",
         loadUI();
 
         _this.tray.attachToDOM();
-        _this.header.attachToDOM();
+        //_this.header.attachToDOM();
       }
       else {
         onReady();

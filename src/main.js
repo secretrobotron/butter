@@ -32,7 +32,7 @@
             "dialog/dialog", "editor/editor", "ui/ui",
             "util/xhr", "util/lang", "util/tutorial",
             "text!default-config.json", "text!layouts/ua-warning.html",
-            "ui/widget/tooltip", "crashreporter", "core/project"
+            "ui/widget/tooltip", "core/project"
           ],
           function(
             EventManager, Logger, Config, Track,
@@ -41,7 +41,7 @@
             Dialog, Editor, UI,
             XHR, Lang, Tutorial,
             DEFAULT_CONFIG_JSON, UA_WARNING_LAYOUT,
-            ToolTip, CrashReporter, Project
+            ToolTip, Project
           ){
 
     // Satisfy lint by making reference non-global

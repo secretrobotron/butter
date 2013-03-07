@@ -113,14 +113,6 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
       window.addEventListener( "mousemove", onTrackEventDragStarted, false );
     }
 
-    function onTrackEventSelected( e ) {
-      butter.editor.editTrackEvent( e.target );
-    }
-
-    function onTrackEventDeselected( e ) {
-      butter.editor.closeTrackEventEditor( e.target );
-    }
-
     function onMediaReady(){
       updateUI();
       _timebar.enable();
@@ -142,15 +134,11 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
       _media.listen( "trackeventremoved", function( e ){
         var trackEvent = e.data;
         trackEvent.view.unlisten( "trackeventmousedown", onTrackEventMouseDown );
-        trackEvent.unlisten( "trackeventselected", onTrackEventSelected );
-        trackEvent.unlisten( "trackeventdeselected", onTrackEventDeselected );
       });
 
       function onTrackEventAdded( e ){
         var trackEvent = e.data;
         trackEvent.view.listen( "trackeventmousedown", onTrackEventMouseDown );
-        trackEvent.listen( "trackeventselected", onTrackEventSelected );
-        trackEvent.listen( "trackeventdeselected", onTrackEventDeselected );
       }
 
       function onTrackAdded( e ){
@@ -190,9 +178,6 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
     }
 
     _media.listen( "mediaready", onMediaReadyFirst );
-
-    butter.editor.listen( "editortoggled", onEditorToggled );
-    butter.listen( "editoropened", onEditorToggled );
     _media.listen( "mediacontentchanged", _timebar.disable );
 
     function onPluginDropped( e ) {
