@@ -463,7 +463,6 @@ define( [ "core/eventmanager", "./toggler",
           // If we have one track event just delete it, otherwise display a warning dialog.
           if ( selectedEvents.length === 1 ) {
             selectedEvent = selectedEvents[ 0 ];
-            butter.editor.closeTrackEventEditor( selectedEvent );
             selectedEvent.track.removeTrackEvent( selectedEvent );
             return;
           }
@@ -475,7 +474,6 @@ define( [ "core/eventmanager", "./toggler",
               submit: function() {
                 for( i = 0; i < l; i++ ) {
                   selectedEvent = selectedEvents[ i ];
-                  butter.editor.closeTrackEventEditor( selectedEvent );
                   selectedEvent.track.removeTrackEvent( selectedEvent );
                 }
                 dialog.close();
@@ -601,7 +599,6 @@ define( [ "core/eventmanager", "./toggler",
 
     // This is an easter egg to open a UI kit editor. Hurrah
     _this.showUIKit = function() {
-      butter.editor.openEditor( "ui-kit" );
     };
 
   } //UI

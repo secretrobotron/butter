@@ -59,7 +59,6 @@ define([ "dialog/dialog", "util/lang", "text!layouts/header.html", "ui/user-data
     }
 
     function openShareEditor() {
-      butter.editor.openEditor( "share-properties" );
     }
 
     function toggleSaveButton( on ) {

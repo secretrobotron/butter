@@ -208,7 +208,6 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
           }
           trackEvent.update( popcornOptions );
         }
-        butter.editor.editTrackEvent( trackEvent );
       }
     }
 
@@ -216,8 +215,6 @@ define( [ "core/trackevent", "core/track", "core/eventmanager",
       if ( _rootElement.parentNode ) {
         _rootElement.parentNode.removeChild( _rootElement );
       }
-      butter.editor.unlisten( "editortoggled", onEditorToggled );
-      butter.unlisten( "editoropened", onEditorToggled );
     };
 
     this.hide = function() {

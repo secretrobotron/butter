@@ -241,7 +241,6 @@
             }
             trackEvent.update( popcornOptions );
           }
-          _this.editor.editTrackEvent( trackEvent );
         }
         else {
           _logger.log( "Warning: No media to add dropped trackevent." );
@@ -252,7 +251,6 @@
         var trackEvent;
         if ( _currentMedia.ready ) {
           trackEvent = _this.generateSafeTrackEvent( e.data.getAttribute( "data-popcorn-plugin-type" ), _currentMedia.currentTime );
-          _this.editor.editTrackEvent( trackEvent );
         }
       }
 
